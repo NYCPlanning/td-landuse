@@ -11,7 +11,7 @@ path='C:/Users/mayij/Desktop/DOC/DCP2021/LAND USE MIX/'
 pio.renderers.default = 'browser'
 
 
-
+# Clean up MapPLUTO
 df=gpd.read_file(path+'mappluto.shp')
 df.crs=4326
 df=df.to_crs(6539)
@@ -38,19 +38,38 @@ df.to_file(path+'ctlu.shp')
 
 
 
-
+# Clustering
+# By FAR
 df=gpd.read_file(path+'ctlu.shp')
 df.crs=4326
 df['resfar']=df['res']/df['land']
 df['offretfar']=df['offret']/df['land']
 df['otherfar']=df['other']/df['land']
+dist=pd.DataFrame()
+dist['k']=range(1,10)
+dist['dist']=np.nan
+for k in range(1,10):
+    km=KMeans(n_clusters=k)
+    km=km.fit(df[['resfar','offretfar','otherfar']])
+    dist.loc[dist['k']==k,'dist']=km.inertia_
+px.scatter(dist,'k','dist')
 k=3 # Elbow
 km=KMeans(n_clusters=k)
 y=km.fit_predict(df[['resfar','offretfar','otherfar']])
+
+# By Pct
 df['farcluster']=y+1
 df['respct']=df['res']/df['bldg']
 df['offretpct']=df['offret']/df['bldg']
 df['otherpct']=df['other']/df['bldg']
+dist=pd.DataFrame()
+dist['k']=range(1,10)
+dist['dist']=np.nan
+for k in range(1,10):
+    km=KMeans(n_clusters=k)
+    km=km.fit(df[['respct','offretpct','otherpct']])
+    dist.loc[dist['k']==k,'dist']=km.inertia_
+px.scatter(dist,'k','dist')
 k=3 # Elbow
 km=KMeans(n_clusters=k)
 y=km.fit_predict(df[['respct','offretpct','otherpct']])
@@ -58,13 +77,14 @@ df['pctcluster']=y+1
 df.to_file(path+'ctlucluster.shp')
 
 
-p=go.Figure()
 
 
 
 
 
 
+# Land use entropy
+# Tract
 df=gpd.read_file(path+'ctlucluster.shp')
 df.crs=4326
 df['resnum']=np.where(df['res']>0,1,0)
@@ -79,10 +99,7 @@ df['lum']=-(df['respct']*df['reslog']+
             df['otherpct']*df['otherlog'])/df['lumnum']
 df.to_file(path+'ctlulum.shp')
 
-
-
-
-
+# NTA
 df=gpd.read_file(path+'ctlulum.shp')
 df.crs=4326
 cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
@@ -106,27 +123,6 @@ df.to_file(path+'ntalulum.shp')
 
 
 
-
-
-
-
-# dist=pd.DataFrame()
-# dist['k']=range(1,10)
-# dist['dist']=np.nan
-# for k in range(1,10):
-#     km=KMeans(n_clusters=k)
-#     km=km.fit(df[['respct','offretpct','otherpct']])
-#     dist.loc[dist['k']==k,'dist']=km.inertia_
-# px.scatter(dist,'k','dist')
-
-
-
-
-# k1=list(range(0,20))
-# k2=[]
-# for i in k1:
-#     k2+=[len(k[k['btfar']>(k['ttfar']+i)])]
-# px.scatter(x=k1,y=k2)
 
 
 
