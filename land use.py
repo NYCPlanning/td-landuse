@@ -7,7 +7,7 @@ import plotly.io as pio
 from sklearn.cluster import KMeans
 
 pd.set_option('display.max_columns', None)
-path='C:/Users/mayij/Desktop/DOC/DCP2021/LAND USE MIX/'
+path='C:/Users/mayij/Desktop/DOC/DCP2021/LAND USE DIVERSITY/'
 pio.renderers.default = 'browser'
 
 
@@ -56,9 +56,9 @@ px.scatter(dist,'k','dist')
 k=3 # Elbow
 km=KMeans(n_clusters=k)
 y=km.fit_predict(df[['resfar','offretfar','otherfar']])
+df['farcluster']=y+1
 
 # By Pct
-df['farcluster']=y+1
 df['respct']=df['res']/df['bldg']
 df['offretpct']=df['offret']/df['bldg']
 df['otherpct']=df['other']/df['bldg']
@@ -80,23 +80,19 @@ df.to_file(path+'ctlucluster.shp')
 
 
 
-
-
-
 # Land use entropy
 # Tract
-df=gpd.read_file(path+'ctlucluster.shp')
+df=gpd.read_file(path+'ctlu.shp')
 df.crs=4326
-df['resnum']=np.where(df['res']>0,1,0)
-df['offretnum']=np.where(df['offret']>0,1,0)
-df['othernum']=np.where(df['other']>0,1,0)
-df['lumnum']=df['resnum']+df['offretnum']+df['othernum']
+df['respct']=df['res']/df['bldg']
+df['offretpct']=df['offret']/df['bldg']
+df['otherpct']=df['other']/df['bldg']
 df['reslog']=np.where(df['res']>0,np.log(df['respct']),0)
 df['offretlog']=np.where(df['offret']>0,np.log(df['offretpct']),0)
 df['otherlog']=np.where(df['other']>0,np.log(df['otherpct']),0)
 df['lum']=-(df['respct']*df['reslog']+
             df['offretpct']*df['offretlog']+
-            df['otherpct']*df['otherlog'])/df['lumnum']
+            df['otherpct']*df['otherlog'])/np.log(3)
 df.to_file(path+'ctlulum.shp')
 
 # NTA
@@ -113,14 +109,18 @@ df=pd.merge(nta,df,how='inner',on='ntacode')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','lum','geometry']].reset_index(drop=True)
 df.to_file(path+'ntalulum.shp')
 
+px.histogram(df['lum'])
 
 
 
-
-
-
-
-
+# k=[]
+# for i in range(0,100000):
+#     a=np.random.uniform(0,1)
+#     b=np.random.uniform(0,1-a)
+#     c=1-a-b
+#     lum=-(a*np.log(a)+b*np.log(b)+c*np.log(c))/np.log(3)
+#     k+=[lum]
+# px.histogram(k)
 
 
 
