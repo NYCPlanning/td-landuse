@@ -37,6 +37,39 @@ df.to_file(path+'ctlu.shp')
 
 
 
+# Land use entropy
+# Tract
+df=gpd.read_file(path+'ctlu.shp')
+df.crs=4326
+df['respct']=df['res']/df['bldg']
+df['offretpct']=df['offret']/df['bldg']
+df['otherpct']=df['other']/df['bldg']
+df['reslog']=np.where(df['res']>0,np.log(df['respct']),0)
+df['offretlog']=np.where(df['offret']>0,np.log(df['offretpct']),0)
+df['otherlog']=np.where(df['other']>0,np.log(df['otherpct']),0)
+df['lum']=-(df['respct']*df['reslog']+
+            df['offretpct']*df['offretlog']+
+            df['otherpct']*df['otherlog'])/np.log(3)
+df.to_file(path+'ctlulum.shp')
+
+# NTA
+df=gpd.read_file(path+'ctlulum.shp')
+df.crs=4326
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df['landlum']=df['land']*df['lum']
+df=df.groupby(['ntacode'],as_index=False).agg({'landlum':'sum','land':'sum'}).reset_index(drop=True)
+df['lum']=df['landlum']/df['land']
+nta=gpd.read_file(path+'ntaclipped.shp')
+nta.crs=4326
+df=pd.merge(nta,df,how='inner',on='ntacode')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','lum','geometry']].reset_index(drop=True)
+df.to_file(path+'ntalulum.shp')
+
+px.histogram(df['lum'])
+
+
+
 
 # Clustering
 # By FAR
@@ -80,36 +113,7 @@ df.to_file(path+'ctlucluster.shp')
 
 
 
-# Land use entropy
-# Tract
-df=gpd.read_file(path+'ctlu.shp')
-df.crs=4326
-df['respct']=df['res']/df['bldg']
-df['offretpct']=df['offret']/df['bldg']
-df['otherpct']=df['other']/df['bldg']
-df['reslog']=np.where(df['res']>0,np.log(df['respct']),0)
-df['offretlog']=np.where(df['offret']>0,np.log(df['offretpct']),0)
-df['otherlog']=np.where(df['other']>0,np.log(df['otherpct']),0)
-df['lum']=-(df['respct']*df['reslog']+
-            df['offretpct']*df['offretlog']+
-            df['otherpct']*df['otherlog'])/np.log(3)
-df.to_file(path+'ctlulum.shp')
 
-# NTA
-df=gpd.read_file(path+'ctlulum.shp')
-df.crs=4326
-cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
-df=pd.merge(df,cttonta,how='inner',on='tractid')
-df['landlum']=df['land']*df['lum']
-df=df.groupby(['ntacode'],as_index=False).agg({'landlum':'sum','land':'sum'}).reset_index(drop=True)
-df['lum']=df['landlum']/df['land']
-nta=gpd.read_file(path+'ntaclipped.shp')
-nta.crs=4326
-df=pd.merge(nta,df,how='inner',on='ntacode')
-df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','lum','geometry']].reset_index(drop=True)
-df.to_file(path+'ntalulum.shp')
-
-px.histogram(df['lum'])
 
 
 
@@ -121,8 +125,4 @@ px.histogram(df['lum'])
 #     lum=-(a*np.log(a)+b*np.log(b)+c*np.log(c))/np.log(3)
 #     k+=[lum]
 # px.histogram(k)
-
-
-
-
 
