@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Open Restaurant</title>
+    <title>Land Use Diversity Index</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
@@ -50,6 +50,14 @@
         #legend label {
             font-weight: bold;
             font-size: 1rem;
+            margin-top: 1rem;
+            display: inline-block;
+        }
+
+
+        #legend select {
+            font-size: 1rem;
+            margin-top: 0.5rem;
         }
 
         #legend>input {
@@ -63,7 +71,7 @@
         #legend>div>input {
             width: 0.8rem;
             height: 0.8rem;
-            margin-left: 2.3rem;
+            margin-left: 0rem;
             margin-right: 1rem;
             margin-top: 0.5rem;
             vertical-align: -0.05rem;
@@ -117,7 +125,24 @@
     <div id="mainmap"></div> <!-- placeholder for main map -->
 
     <nav id="legend">
-        <!-- <div> <a id="downloadLink" href="" download="map.png">Export to image</a></div> -->
+        <label>
+            Land Use Grouping
+        </label>
+        <br>
+        <select id='lucat'>
+            <option value='3cat'>Res+OffRet+Other</option>
+            <option value='5cat'>LowRes+HighRes+Off+Ret+Other</option>
+        </select>
+        <br>
+        <label>
+            Aggregation Level
+        </label>
+        <br>
+        <select id='agglvl'>
+            <option value='ct'>Census Tract</option>
+            <option value='nta'>Neightborhood Tabulation Area (NTA)</option>
+        </select>
+        <br>
     </nav> <!-- placeholder for layer selector and legend -->
 
 
@@ -185,22 +210,29 @@
 
 
 
-            // Add Zoning District
+            // Add Census Tract LUDI
             // Set layer contents
             var layerContent = {
-                'sourceid': 'zd', // source id
+                'sourceid': 'ct3catludi', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'zd.geojson', // data source
-                'layerid': 'zd', // layer id
+                'sourcedata': 'ct3catludi.geojson', // data source
+                'layerid': 'ct3catludi', // layer id
                 'layertype': 'fill', // symbology type
-                'layername': 'Zoning District', // layer name for the legend
-                'layervisibility': 'none', // visibility of the layer
+                'layername': 'Census Tract LUDI', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'cat', // category column name
-                'layercat': [''], // categories
-                'layercolor': ['rgba(82,157,204,0)'], // extrusion color; use rgba
-                'layeropacity': 1, // fill opacity
-                'layeroutlinecolor': 'rgba(0,0,0,0.3)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+                'layercat': ['0.00~0.39', '0.40~0.49', '0.50~0.59', '0.60~0.69', '0.70~1.00'], // categories
+                'layercolor': ['rgba(43,131,186,0.9)', 'rgba(171,221,164,0.9)', 'rgba(255,255,191,0.9)', 'rgba(253,174,97,0.9)', 'rgba(215,25,28,0.9)'], // extrusion color; use rgba
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
 
             // Add layer content to the overall layer content list
             layerContentList.push(layerContent);
@@ -220,32 +252,29 @@
                     'visibility': layerContent['layervisibility'],
                 },
                 'paint': {
-                    'fill-color': layerContent['layercolor'][0],
-                    'fill-opacity': layerContent['layeropacity'],
-                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                    'fill-color': layerColor,
+                    // 'fill-outline-color': layerContent['layeroutlinecolor'],
                 },
             });
 
 
 
-            // Add Sidewalk Cafe
+
+
+            // Add NTA LUDI
             // Set layer contents
             var layerContent = {
-                'sourceid': 'sdwkcafe', // source id
+                'sourceid': 'nta3catludi', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'sdwkcafe.geojson', // data source
-                'layerid': 'sdwkcafe', // layer id
-                'layertype': 'line', // symbology type
-                'layername': 'Sidewalk Cafe Regulation', // layer name for the legend
-                'layerlinecap': 'round', // line endings; butt/round/square
-                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'sourcedata': 'nta3catludi.geojson', // data source
+                'layerid': 'nta3catludi', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'NTA LUDI', // layer name for the legend
                 'layervisibility': 'none', // visibility of the layer
-                'layercolname': 'CAFETYPE', // category column name
-                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'NOT PERMITTED'], // categories
-                'layercolor': ['rgba(113,190,40,1)', 'rgba(246,189,0,1)', 'rgba(222,134,239,1)', 'rgba(255,109,109,1)'], // color for each category; use rgba
-                'layeropacity': 1, // line opacity
-                'layerwidth': 2, // line width
-                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
+                'layercolname': 'cat', // category column name
+                'layercat': ['0.00~0.19', '0.20~0.39', '0.40~0.59', '0.60~0.79', '0.80~1.00'], // categories
+                'layercolor': ['rgba(43,131,186,0.9)', 'rgba(171,221,164,0.9)', 'rgba(255,255,191,0.9)', 'rgba(253,174,97,0.9)', 'rgba(215,25,28,0.9)'], // extrusion color; use rgba
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
 
             // Generate layer colors
@@ -265,63 +294,7 @@
                 'data': layerContent['sourcedata'],
             });
 
-            // Add line layer
-            map.addLayer({
-                'id': layerContent['layerid'],
-                'type': layerContent['layertype'],
-                'source': layerContent['sourceid'],
-                'layout': {
-                    'line-cap': layerContent['layerlinecap'],
-                    'line-join': layerContent['layerlinejoin'],
-                    'visibility': layerContent['layervisibility'],
-                },
-                'paint': {
-                    'line-color': layerColor,
-                    'line-opacity': layerContent['layeropacity'],
-                    'line-width': layerContent['layerwidth'],
-                },
-            });
-
-
-            // Add Open Restaurant by Sidewalk Width
-            // Set layer contents
-            var layerContent = {
-                'sourceid': 'orcafeznelwd', // source id
-                'sourcetype': 'geojson', // source type
-                'sourcedata': 'or_cafe_zn_el_wd.geojson', // data source
-                'layerid': 'orsw', // layer id
-                'layertype': 'circle', // symbology type
-                'layername': 'Open Restaurant by Sidewalk Width', // layer name for the legend
-                'layervisibility': 'none', // visibility of the layer
-                'layercolname': 'SWCAT', // category column name
-                'layercat': ['<11 ft', '11 ft ~ 14 ft', '>14 ft'], // categories
-                'layercolor': ['rgba(227,26,28,1)', 'rgba(251,154,153,1)', 'rgba(113,190,40,1)'], // color for each category; use rgba
-                'layeropacity': 1, // circle opacity
-                'layerradius': { 'base': 2, 'stops': [[12, 3], [22, 180]] }, // circle radius; change size based on zoom level
-                'layerstrokecolor': 'rgba(255,255,255,1)', // circle stroke color
-                'layerstrokeopacity': 1, // circle stroke opacity
-                'layerstrokewidth': 0.5, // circle stroke width
-                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
-            };
-
-            // Generate layer colors
-            var layerColor = ['match', ['get', layerContent['layercolname']]];
-            for (var i = 0; i < layerContent.layercat.length; i++) {
-                layerColor.push(layerContent.layercat[i]);
-                layerColor.push(layerContent.layercolor[i]);
-            };
-            layerColor.push('#000000');
-
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
-
-            // Add data source
-            map.addSource(layerContent['sourceid'], {
-                'type': layerContent['sourcetype'],
-                'data': layerContent['sourcedata'],
-            });
-
-            // Add circle layer
+            // Add fill layer
             map.addLayer({
                 'id': layerContent['layerid'],
                 'type': layerContent['layertype'],
@@ -330,14 +303,14 @@
                     'visibility': layerContent['layervisibility'],
                 },
                 'paint': {
-                    'circle-color': layerColor,
-                    'circle-opacity': layerContent['layeropacity'],
-                    'circle-radius': layerContent['layerradius'],
-                    'circle-stroke-color': layerContent['layerstrokecolor'],
-                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
-                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                    'fill-color': layerColor,
+                    // 'fill-outline-color': layerContent['layeroutlinecolor'],
                 },
             });
+
+
+
+
 
 
 
@@ -391,31 +364,24 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['orcafe', 'orsw', 'sdwkcafe', 'sdwkwdimp', 'zd', 'co', 'sp', 'hd','el']; // set layer order in the legend
+            var layerOrder = ['ct3catludi', 'nta3catludi']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
             };
-
             var filterLegend = document.getElementById('legend');
 
             for (var i = 0; i < layerContentListOrder.length; i++) {
                 // Create layer selector
-                var input = document.createElement('input'); // create input checkbox
-                input.type = 'checkbox';
-                input.id = layerContentListOrder[i]['layerid'];
-                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
-                    input.checked = true;
-                } else {
-                    input.checked = false;
-                };
-                filterLegend.appendChild(input);
                 var label = document.createElement('label'); // create checkbox label
-                label.setAttribute('for', layerContentListOrder[i]['layerid']);
+                label.className = layerContentListOrder[i]['layerid'];
                 label.textContent = layerContentListOrder[i]['layername'];
                 filterLegend.appendChild(label);
-                var linebreak = document.createElement("br"); // add break line
-                filterLegend.appendChild(linebreak);
+                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
+                    label.style.display = 'block';
+                } else {
+                    label.style.display = 'none';
+                };
 
                 // Create legend
                 for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
@@ -462,28 +428,27 @@
                         console.log(checkedFilter)
                     });
                 };
-
-                // Create click event
-                input.addEventListener('click', function (e) {
-                    var clickedLayer = this.id;
-                    var clickedLayerLabel = this.id + '-label';
-                    var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
-                    var legendGroup = document.getElementsByClassName(clickedLayer + '-item');
-                    if (visibility === 'visible') {
-                        map.setLayoutProperty(clickedLayer, 'visibility', 'none'); // set layer visibility
-                        map.setLayoutProperty(clickedLayerLabel, 'visibility', 'none'); // set layer visibility
-                        for (var j = 0; j < legendGroup.length; j++) {
-                            legendGroup[j].style.display = 'none';
-                        } // set legend visibility
-                    } else {
-                        map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
-                        map.setLayoutProperty(clickedLayerLabel, 'visibility', 'visible');
-                        for (var j = 0; j < legendGroup.length; j++) {
-                            legendGroup[j].style.display = 'block';
-                        }
-                    };
-                });
             };
+
+            // Create click event
+            agglvl.addEventListener('change', function () {
+                var chosenLayer = document.getElementById('agglvl').value + document.getElementById('lucat').value + 'ludi';
+                map.setLayoutProperty(chosenLayer, 'visibility', 'visible'); // set layer visibility
+                document.getElementsByClassName(chosenLayer)[0].style.display = 'block';
+                var chosenLegendGroup = document.getElementsByClassName(chosenLayer + '-item');
+                for (var i = 0; i < chosenLegendGroup.length; i++) {
+                    chosenLegendGroup[i].style.display = 'block';
+                };
+                var unchosenLayer = layerOrder.filter(function (x) { return x !== chosenLayer; });
+                for (var i = 0; i < unchosenLayer.length; i++) {
+                    map.setLayoutProperty(unchosenLayer[i], 'visibility', 'none'); // set layer visibility
+                    document.getElementsByClassName(unchosenLayer[i])[0].style.display = 'none';
+                    var unchosenLegendGroup = document.getElementsByClassName(unchosenLayer[i] + '-item');
+                    for (var i = 0; i < unchosenLegendGroup.length; i++) {
+                       unchosenLegendGroup[i].style.display = 'none';
+                    };
+                };
+            });
         });
     </script>
 

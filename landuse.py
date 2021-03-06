@@ -47,34 +47,42 @@ df['otherpct']=df['other']/df['bldg']
 df['reslog']=np.where(df['res']>0,np.log(df['respct']),0)
 df['offretlog']=np.where(df['offret']>0,np.log(df['offretpct']),0)
 df['otherlog']=np.where(df['other']>0,np.log(df['otherpct']),0)
-df['lum']=-(df['respct']*df['reslog']+
+df['ludi']=-(df['respct']*df['reslog']+
             df['offretpct']*df['offretlog']+
             df['otherpct']*df['otherlog'])/np.log(3)
-df.to_file(path+'ctlulum.shp')
-df['lum'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['lum']<=0.2,'0.00~0.19',
-          np.where(df['lum']<=0.4,'0.20~0.39',
-          np.where(df['lum']<=0.6,'0.40~0.59',
-          np.where(df['lum']<=0.8,'0.60~0.79',
-          '0.80~1.00'))))
-df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctlulum.geojson',driver='GeoJSON')
+df.to_file(path+'ct3catludi.shp')
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<=0.4,'0.00~0.39',
+          np.where(df['ludi']<=0.5,'0.40~0.49',
+          np.where(df['ludi']<=0.6,'0.50~0.59',
+          np.where(df['ludi']<=0.7,'0.60~0.69',
+          '0.70~1.00'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ct3catludi.geojson',driver='GeoJSON')
 
 
 
 
 # NTA
-df=gpd.read_file(path+'ctlulum.shp')
+df=gpd.read_file(path+'ct3catludi.shp')
 df.crs=4326
 cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid')
-df['landlum']=df['land']*df['lum']
-df=df.groupby(['ntacode'],as_index=False).agg({'landlum':'sum','land':'sum'}).reset_index(drop=True)
-df['lum']=df['landlum']/df['land']
+df['landludi']=df['land']*df['ludi']
+df=df.groupby(['ntacode'],as_index=False).agg({'landludi':'sum','land':'sum'}).reset_index(drop=True)
+df['ludi']=df['landludi']/df['land']
 nta=gpd.read_file(path+'ntaclipped.shp')
 nta.crs=4326
 df=pd.merge(nta,df,how='inner',on='ntacode')
-df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','lum','geometry']].reset_index(drop=True)
-df.to_file(path+'ntalulum.shp')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
+df.to_file(path+'nta3catludi.shp')
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<=0.2,'0.00~0.19',
+          np.where(df['ludi']<=0.4,'0.20~0.39',
+          np.where(df['ludi']<=0.6,'0.40~0.59',
+          np.where(df['ludi']<=0.8,'0.60~0.79',
+          '0.80~1.00'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/nta3catludi.geojson',driver='GeoJSON')
+
 
 px.histogram(df['lum'])
 
