@@ -51,6 +51,16 @@ df['lum']=-(df['respct']*df['reslog']+
             df['offretpct']*df['offretlog']+
             df['otherpct']*df['otherlog'])/np.log(3)
 df.to_file(path+'ctlulum.shp')
+df['lum'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['lum']<=0.2,'0.00~0.19',
+          np.where(df['lum']<=0.4,'0.20~0.39',
+          np.where(df['lum']<=0.6,'0.40~0.59',
+          np.where(df['lum']<=0.8,'0.60~0.79',
+          '0.80~1.00'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctlulum.geojson',driver='GeoJSON')
+
+
+
 
 # NTA
 df=gpd.read_file(path+'ctlulum.shp')
