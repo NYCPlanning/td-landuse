@@ -27,9 +27,15 @@ df['ttfar']=df['ResidFAR']+df['CommFAR']+df['FacilFAR']
 df['btfar']=df['bldg']/df['shape']
 df=df[df['btfar']<=40].reset_index(drop=True)
 df['res']=df['ResArea'].copy()
-df['offret']=df['OfficeArea']+df['RetailArea']
-df['other']=df['GarageArea']+df['StrgeArea']+df['FactryArea']+df['OtherArea']
-df=df.groupby(['tractid'],as_index=False).agg({'res':'sum','offret':'sum','other':'sum','bldg':'sum','shape':'sum'}).reset_index(drop=True)
+df['off']=df['OfficeArea'].copy()
+df['ret']=df['RetailArea'].copy()
+df['grg']=df['GarageArea'].copy()
+df['stg']=df['StrgeArea'].copy()
+df['fct']=df['FactryArea'].copy()
+df['oth']=df['OtherArea'].copy()
+df=df.groupby(['tractid'],as_index=False).agg({'res':'sum','off':'sum','ret':'sum','grg':'sum',
+                                               'stg':'sum','fct':'sum','oth':'sum','bldg':'sum',
+                                               'shape':'sum'}).reset_index(drop=True)
 ct=gpd.read_file(path+'nycctclipped.shp')
 ct.crs=4326
 df=pd.merge(ct,df,how='inner',on='tractid')
@@ -38,32 +44,35 @@ df.to_file(path+'ctlu.shp')
 
 
 # Land use entropy
+# Cat3
 # Tract
 df=gpd.read_file(path+'ctlu.shp')
 df.crs=4326
-df['respct']=df['res']/df['bldg']
-df['offretpct']=df['offret']/df['bldg']
-df['otherpct']=df['other']/df['bldg']
-df['reslog']=np.where(df['res']>0,np.log(df['respct']),0)
-df['offretlog']=np.where(df['offret']>0,np.log(df['offretpct']),0)
-df['otherlog']=np.where(df['other']>0,np.log(df['otherpct']),0)
+df['cat3res']=df['res'].copy()
+df['cat3offret']=df['off']+df['ret']
+df['cat3other']=df['grg']+df['stg']+df['fct']+df['oth']
+df['respct']=df['cat3res']/df['bldg']
+df['offretpct']=df['cat3offret']/df['bldg']
+df['otherpct']=df['cat3other']/df['bldg']
+df['reslog']=np.where(df['cat3res']>0,np.log(df['respct']),0)
+df['offretlog']=np.where(df['cat3offret']>0,np.log(df['offretpct']),0)
+df['otherlog']=np.where(df['cat3other']>0,np.log(df['otherpct']),0)
 df['ludi']=-(df['respct']*df['reslog']+
             df['offretpct']*df['offretlog']+
             df['otherpct']*df['otherlog'])/np.log(3)
-df.to_file(path+'ct3catludi.shp')
+df.to_file(path+'ctcat3ludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
 df['cat']=np.where(df['ludi']<=0.4,'0.00~0.39',
           np.where(df['ludi']<=0.5,'0.40~0.49',
           np.where(df['ludi']<=0.6,'0.50~0.59',
           np.where(df['ludi']<=0.7,'0.60~0.69',
           '0.70~1.00'))))
-df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ct3catludi.geojson',driver='GeoJSON')
-
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat3ludi.geojson',driver='GeoJSON')
 
 
 
 # NTA
-df=gpd.read_file(path+'ct3catludi.shp')
+df=gpd.read_file(path+'ctcat3ludi.shp')
 df.crs=4326
 cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid')
@@ -74,14 +83,92 @@ nta=gpd.read_file(path+'ntaclipped.shp')
 nta.crs=4326
 df=pd.merge(nta,df,how='inner',on='ntacode')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
-df.to_file(path+'nta3catludi.shp')
+df.to_file(path+'ntacat3ludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
 df['cat']=np.where(df['ludi']<=0.4,'0.00~0.39',
           np.where(df['ludi']<=0.5,'0.40~0.49',
           np.where(df['ludi']<=0.6,'0.50~0.59',
           np.where(df['ludi']<=0.7,'0.60~0.69',
           '0.70~1.00'))))
-df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/nta3catludi.geojson',driver='GeoJSON')
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat3ludi.geojson',driver='GeoJSON')
+
+
+
+
+
+
+
+# Cat5
+# Tract
+df=gpd.read_file(path+'ctlu.shp')
+df.crs=4326
+df['cat5res']=df['res'].copy()
+df['cat5off']=df['off'].copy()
+df['cat5ret']=df['ret'].copy()
+df['cat5ind']=df['grg']+df['stg']+df['fct']
+df['cat5other']=df['oth'].copy()
+df['respct']=df['cat5res']/df['bldg']
+df['offpct']=df['cat5off']/df['bldg']
+df['retpct']=df['cat5ret']/df['bldg']
+df['indpct']=df['cat5ind']/df['bldg']
+df['otherpct']=df['cat5other']/df['bldg']
+df['reslog']=np.where(df['cat5res']>0,np.log(df['respct']),0)
+df['offlog']=np.where(df['cat5off']>0,np.log(df['offpct']),0)
+df['retlog']=np.where(df['cat5ret']>0,np.log(df['retpct']),0)
+df['indlog']=np.where(df['cat5ind']>0,np.log(df['indpct']),0)
+df['otherlog']=np.where(df['cat5other']>0,np.log(df['otherpct']),0)
+df['ludi']=-(df['respct']*df['reslog']+
+            df['offpct']*df['offlog']+
+            df['retpct']*df['retlog']+
+            df['indpct']*df['indlog']+
+            df['otherpct']*df['otherlog'])/np.log(5)
+df.to_file(path+'ctcat5ludi.shp')
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<=0.3,'0.00~0.29',
+          np.where(df['ludi']<=0.4,'0.30~0.39',
+          np.where(df['ludi']<=0.5,'0.40~0.49',
+          np.where(df['ludi']<=0.6,'0.50~0.59',
+          '0.60~1.00'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat5ludi.geojson',driver='GeoJSON')
+
+
+
+# NTA
+df=gpd.read_file(path+'ctcat5ludi.shp')
+df.crs=4326
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df['bldgludi']=df['bldg']*df['ludi']
+df=df.groupby(['ntacode'],as_index=False).agg({'bldgludi':'sum','bldg':'sum'}).reset_index(drop=True)
+df['ludi']=df['bldgludi']/df['bldg']
+nta=gpd.read_file(path+'ntaclipped.shp')
+nta.crs=4326
+df=pd.merge(nta,df,how='inner',on='ntacode')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
+df.to_file(path+'ntacat5ludi.shp')
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<=0.3,'0.00~0.29',
+          np.where(df['ludi']<=0.4,'0.30~0.39',
+          np.where(df['ludi']<=0.5,'0.40~0.49',
+          np.where(df['ludi']<=0.6,'0.50~0.59',
+          '0.60~1.00'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat5ludi.geojson',driver='GeoJSON')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
