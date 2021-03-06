@@ -11,25 +11,25 @@ path='C:/Users/mayij/Desktop/DOC/DCP2021/LAND USE DIVERSITY/'
 pio.renderers.default = 'browser'
 
 
+
 # Clean up MapPLUTO
 df=gpd.read_file(path+'mappluto.shp')
 df.crs=4326
-df=df.to_crs(6539)
 df['county']=df['Borough'].map({'BX':'36005','BK':'36047','MN':'36061','QN':'36081','SI':'36085'})
 df['tract']=pd.to_numeric(df['CT2010'])
 df=df[pd.notna(df['tract'])].reset_index(drop=True)
 df['tract']=[str(int(x*100)).zfill(6) for x in df['tract']]
 df['tractid']=df['county']+df['tract']
-df['land']=[x.area for x in df['geometry']]
+df['shape']=df['Shape_Area'].copy()
 df['bldg']=df['ResArea']+df['OfficeArea']+df['RetailArea']+df['GarageArea']+df['StrgeArea']+df['FactryArea']+df['OtherArea']
 df=df[df['bldg']!=0].reset_index(drop=True)
 df['ttfar']=df['ResidFAR']+df['CommFAR']+df['FacilFAR']
-df['btfar']=df['bldg']/df['land']
+df['btfar']=df['bldg']/df['shape']
 df=df[df['btfar']<=40].reset_index(drop=True)
 df['res']=df['ResArea'].copy()
 df['offret']=df['OfficeArea']+df['RetailArea']
 df['other']=df['GarageArea']+df['StrgeArea']+df['FactryArea']+df['OtherArea']
-df=df.groupby(['tractid'],as_index=False).agg({'res':'sum','offret':'sum','other':'sum','bldg':'sum','land':'sum'}).reset_index(drop=True)
+df=df.groupby(['tractid'],as_index=False).agg({'res':'sum','offret':'sum','other':'sum','bldg':'sum','shape':'sum'}).reset_index(drop=True)
 ct=gpd.read_file(path+'nycctclipped.shp')
 ct.crs=4326
 df=pd.merge(ct,df,how='inner',on='tractid')
@@ -67,24 +67,23 @@ df=gpd.read_file(path+'ct3catludi.shp')
 df.crs=4326
 cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid')
-df['landludi']=df['land']*df['ludi']
-df=df.groupby(['ntacode'],as_index=False).agg({'landludi':'sum','land':'sum'}).reset_index(drop=True)
-df['ludi']=df['landludi']/df['land']
+df['bldgludi']=df['bldg']*df['ludi']
+df=df.groupby(['ntacode'],as_index=False).agg({'bldgludi':'sum','bldg':'sum'}).reset_index(drop=True)
+df['ludi']=df['bldgludi']/df['bldg']
 nta=gpd.read_file(path+'ntaclipped.shp')
 nta.crs=4326
 df=pd.merge(nta,df,how='inner',on='ntacode')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
 df.to_file(path+'nta3catludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.2,'0.00~0.19',
-          np.where(df['ludi']<=0.4,'0.20~0.39',
-          np.where(df['ludi']<=0.6,'0.40~0.59',
-          np.where(df['ludi']<=0.8,'0.60~0.79',
-          '0.80~1.00'))))
+df['cat']=np.where(df['ludi']<=0.4,'0.00~0.39',
+          np.where(df['ludi']<=0.5,'0.40~0.49',
+          np.where(df['ludi']<=0.6,'0.50~0.59',
+          np.where(df['ludi']<=0.7,'0.60~0.69',
+          '0.70~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/nta3catludi.geojson',driver='GeoJSON')
 
 
-px.histogram(df['lum'])
 
 
 
