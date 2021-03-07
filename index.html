@@ -162,8 +162,8 @@
             attributionControl: true, // show the credit bar
             customAttribution: '<b><span>Click </span><a href="https://github.com/NYCPlanning/td-landuse/blob/master/LAND%20USE%20DIVERSITY.pdf" target="_blank">HERE</a><span> for detailed methodology</span><b>', // add overall credit to the beggining
             preserveDrawingBuffer: true, // make sure it's on to allow printing
-            center: [-74.0197, 40.721], // testing to get the centroid of bounds
-            zoom: 10, // set the initial zoom of the map view
+            center: [-73.9519, 40.712], // testing to get the centroid of bounds
+            zoom: 9.8, // set the initial zoom of the map view
         });
 
 
@@ -410,6 +410,105 @@
                     // 'fill-outline-color': layerContent['layeroutlinecolor'],
                 },
             });
+
+
+
+
+
+
+
+
+            // Add popup
+            var popup = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+
+            // Add Census Tract Cat3 LUDI popup
+            // Add click event
+            map.on('click', 'ctcat3ludi', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                description += "<b>Residential%​: </b><span>" + (Number(e.features[0].properties.respct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Office&Retail%​: </b><span>" + (Number(e.features[0].properties.offretpct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Other%​: </b><span>" + (Number(e.features[0].properties.otherpct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'ctcat3ludi', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'ctcat3ludi', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+            // Add NTA Cat3 LUDI popup
+            // Add click event
+            map.on('click', 'ntacat3ludi', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
+                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'ntacat3ludi', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'ntacat3ludi', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+            // Add Census Tract Cat5 LUDI popup
+            // Add click event
+            map.on('click', 'ctcat5ludi', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                description += "<b>Residential%​: </b><span>" + (Number(e.features[0].properties.respct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Office%​: </b><span>" + (Number(e.features[0].properties.offpct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Retail%​: </b><span>" + (Number(e.features[0].properties.retpct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Industrial%​: </b><span>" + (Number(e.features[0].properties.indpct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Other%​: </b><span>" + (Number(e.features[0].properties.otherpct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'ctcat5ludi', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'ctcat5ludi', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+            // Add NTA Cat3 LUDI popup
+            // Add click event
+            map.on('click', 'ntacat5ludi', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
+                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'ntacat5ludi', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'ntacat5ludi', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+
+
+
 
 
 
