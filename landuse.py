@@ -181,8 +181,9 @@ df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat3ludi.geojson',dri
 
 
 # NTA
-df=gpd.read_file(path+'ctcat3ludi.shp')
+df=gpd.read_file(path+'bkwkcat3ludi.shp')
 df.crs=4326
+df['tractid']=[str(x)[0:11] for x in df['blockid']]
 cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid')
 df['bldgludi']=df['bldg']*df['ludi']
@@ -272,8 +273,9 @@ df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat5ludi.geojson',dri
 
 
 # NTA
-df=gpd.read_file(path+'ctcat5ludi.shp')
+df=gpd.read_file(path+'bkwkcat5ludi.shp')
 df.crs=4326
+df['tractid']=[str(x)[0:11] for x in df['blockid']]
 cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid')
 df['bldgludi']=df['bldg']*df['ludi']
@@ -361,8 +363,9 @@ df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat5wgtludi.geojson',
 
 
 # NTA
-df=gpd.read_file(path+'ctcat5wgtludi.shp')
+df=gpd.read_file(path+'bkwkcat5wgtludi.shp')
 df.crs=4326
+df['tractid']=[str(x)[0:11] for x in df['blockid']]
 cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid')
 df['bldgludi']=df['bldg']*df['ludi']
