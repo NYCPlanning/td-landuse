@@ -1,6 +1,8 @@
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import requests
+import json
 import plotly.graph_objects as go
 import plotly.express as px
 import plotly.io as pio
@@ -21,14 +23,35 @@ quadstatebkpt['county']=[str(x)[0:5] for x in quadstatebkpt['blockid']]
 nycbkpt=quadstatebkpt.loc[quadstatebkpt['county'].isin(['36005','36047','36061','36081','36085']),['blockid','geometry']].reset_index(drop=True)
 nycbkpt.to_file(path+'nycbkpt.shp')
 
-
-
 # Get NYC block clipped
 quadstatebk=gpd.read_file('C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/shp/quadstatebkclipped.shp')
 quadstatebk.crs=4326
 quadstatebk['county']=[str(x)[0:5] for x in quadstatebk['blockid']]
 nycbk=quadstatebk.loc[quadstatebk['county'].isin(['36005','36047','36061','36081','36085']),['blockid','geometry']].reset_index(drop=True)
 nycbk.to_file(path+'nycbkclipped.shp')
+
+# Get OTP Walksheds
+otpbkwk=gpd.read_file(path+'nycbkpt.shp')
+otpbkwk.crs=4326
+otpbkwk['halfmile']=''
+doserver='http://159.65.64.166:8801/'
+for i in otpbkwk.index:
+    try:
+        url=doserver+'otp/routers/default/isochrone?batch=true&mode=WALK'
+        url+='&fromPlace='+str(quadstatebkpt.loc[i,'geometry'].y)+','+str(quadstatebkpt.loc[i,'geometry'].x)
+        url+='&cutoffSec=600'
+        headers={'Accept':'application/json'}
+        req=requests.get(url=url,headers=headers)
+        js=req.json()
+        iso=gpd.GeoDataFrame.from_features(js,crs=4326)
+        otpbkwk.loc[i,'halfmile']=iso.loc[0,'geometry']
+    except:
+        otpbkwk.loc[i,'halfmile']=''
+        print(str(otpbkwk.loc[i,'blockid'])+' no geometry!')
+otpbkwk=otpbkwk.loc[otpbkwk['halfmile']!='',['blockid','halfmile']].reset_index(drop=True)
+otpbkwk=gpd.GeoDataFrame(otpbkwk,geometry=otpbkwk['halfmile'],crs=4326)
+otpbkwk=otpbkwk.drop('halfmile',axis=1)
+otpbkwk.to_file(path+'otpbkwk.shp')
 
 
 
@@ -104,10 +127,12 @@ df.to_file(path+'bklu.shp')
 # Half-Mile Walkshed
 bk=gpd.read_file(path+'nycbkclipped.shp')
 bk.crs=4326
-bkwk=gpd.read_file(path+'nycbkhalfmile.shp')
+# bkwk=gpd.read_file(path+'nycbkhalfmile.shp')
+# bkwk.crs=4326
+# bkwk['blockid']=[x.split(':')[0].strip() for x in bkwk['Name']]
+# bkwk=bkwk[['blockid','geometry']].reset_index(drop=True)
+bkwk=gpd.read_file(path+'otpbkwk.shp')
 bkwk.crs=4326
-bkwk['blockid']=[x.split(':')[0].strip() for x in bkwk['Name']]
-bkwk=bkwk[['blockid','geometry']].reset_index(drop=True)
 df=gpd.sjoin(bkwk,bk,how='inner',op='intersects')
 bklu=gpd.read_file(path+'bklu.shp')
 bklu.crs=4326
