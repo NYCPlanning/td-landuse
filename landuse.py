@@ -355,11 +355,11 @@ df['ludi']=-(df['respct']*df['reslog']*1+
             df['otherpct']*df['otherlog']*1)/np.log(1+1+5+0.25+1)
 df.to_file(path+'bkwkcat5wgtludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.4,'0.00~0.39',
-          np.where(df['ludi']<=0.5,'0.40~0.49',
+df['cat']=np.where(df['ludi']<=0.5,'0.00~0.49',
           np.where(df['ludi']<=0.6,'0.50~0.59',
           np.where(df['ludi']<=0.7,'0.60~0.69',
-          '0.70~1.00'))))
+          np.where(df['ludi']<=0.8,'0.70~0.79',
+          '0.80~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat5wgtludi.geojson',driver='GeoJSON')
 
 
@@ -379,11 +379,11 @@ df=pd.merge(df,cttonta,how='inner',on='tractid')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','bldg','ludi','geometry']].reset_index(drop=True)
 df.to_file(path+'ctcat5wgtludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.4,'0.00~0.39',
-          np.where(df['ludi']<=0.5,'0.40~0.49',
+df['cat']=np.where(df['ludi']<=0.5,'0.00~0.49',
           np.where(df['ludi']<=0.6,'0.50~0.59',
           np.where(df['ludi']<=0.7,'0.60~0.69',
-          '0.70~1.00'))))
+          np.where(df['ludi']<=0.8,'0.70~0.79',
+          '0.80~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat5wgtludi.geojson',driver='GeoJSON')
 
 
@@ -403,11 +403,11 @@ df=pd.merge(nta,df,how='inner',on='ntacode')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
 df.to_file(path+'ntacat5wgtludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.4,'0.00~0.39',
-          np.where(df['ludi']<=0.5,'0.40~0.49',
+df['cat']=np.where(df['ludi']<=0.5,'0.00~0.49',
           np.where(df['ludi']<=0.6,'0.50~0.59',
           np.where(df['ludi']<=0.7,'0.60~0.69',
-          '0.70~1.00'))))
+          np.where(df['ludi']<=0.8,'0.70~0.79',
+          '0.80~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat5wgtludi.geojson',driver='GeoJSON')
 
 
