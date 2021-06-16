@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import requests
 import json
+from shapely import wkt
 import plotly.graph_objects as go
 import plotly.express as px
 import plotly.io as pio
@@ -12,7 +13,7 @@ from sklearn.cluster import KMeans
 
 pd.set_option('display.max_columns', None)
 path='C:/Users/mayij/Desktop/DOC/DCP2021/LAND USE DIVERSITY/'
-pio.renderers.default = 'browser'
+pio.renderers.default='browser'
 
 
 
@@ -44,12 +45,12 @@ for i in otpbkwk.index:
         req=requests.get(url=url,headers=headers)
         js=req.json()
         iso=gpd.GeoDataFrame.from_features(js,crs=4326)
-        otpbkwk.loc[i,'halfmile']=iso.loc[0,'geometry']
+        otpbkwk.loc[i,'halfmile']=iso.loc[0,'geometry'].wkt
     except:
         otpbkwk.loc[i,'halfmile']=''
         print(str(otpbkwk.loc[i,'blockid'])+' no geometry!')
 otpbkwk=otpbkwk.loc[otpbkwk['halfmile']!='',['blockid','halfmile']].reset_index(drop=True)
-otpbkwk=gpd.GeoDataFrame(otpbkwk,geometry=otpbkwk['halfmile'],crs=4326)
+otpbkwk=gpd.GeoDataFrame(otpbkwk,geometry=otpbkwk['halfmile'].map(wkt.loads),crs=4326)
 otpbkwk=otpbkwk.drop('halfmile',axis=1)
 otpbkwk.to_file(path+'otpbkwk.shp')
 
