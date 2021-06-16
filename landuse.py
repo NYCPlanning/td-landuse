@@ -350,9 +350,9 @@ df['indlog']=np.where(df['cat5ind']>0,np.log(df['indpct']),0)
 df['otherlog']=np.where(df['cat5other']>0,np.log(df['otherpct']),0)
 df['ludi']=-(df['respct']*df['reslog']*1+
             df['offpct']*df['offlog']*1+
-            df['retpct']*df['retlog']*3+
+            df['retpct']*df['retlog']*5+
             df['indpct']*df['indlog']*0.25+
-            df['otherpct']*df['otherlog']*1)/np.log(1+1+3+0.25+1)
+            df['otherpct']*df['otherlog']*1)/np.log(1+1+5+0.25+1)
 df.to_file(path+'bkwkcat5wgtludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
 df['cat']=np.where(df['ludi']<=0.4,'0.00~0.39',
