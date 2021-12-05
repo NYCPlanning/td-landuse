@@ -173,11 +173,11 @@ df['ludi']=-(df['respct']*df['reslog']+
             df['otherpct']*df['otherlog'])/np.log(3)
 df.to_file(path+'bkwkcat3ludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.5,'0.00~0.49',
-          np.where(df['ludi']<=0.6,'0.50~0.59',
-          np.where(df['ludi']<=0.7,'0.60~0.69',
-          np.where(df['ludi']<=0.8,'0.70~0.79',
-          '0.80~1.00'))))
+df['cat']=np.where(df['ludi']<0.5,'0.00~0.49',
+          np.where(df['ludi']<0.6,'0.50~0.59',
+          np.where(df['ludi']<0.7,'0.60~0.69',
+          np.where(df['ludi']<0.8,'0.70~0.79',
+                   '0.80~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat3ludi.geojson',driver='GeoJSON')
 
 
@@ -194,14 +194,14 @@ ct.crs=4326
 df=pd.merge(ct,df,how='inner',on='tractid')
 cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid')
-df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','bldg','ludi','geometry']].reset_index(drop=True)
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','ludi','geometry']].reset_index(drop=True)
 df.to_file(path+'ctcat3ludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.5,'0.00~0.49',
-          np.where(df['ludi']<=0.6,'0.50~0.59',
-          np.where(df['ludi']<=0.7,'0.60~0.69',
-          np.where(df['ludi']<=0.8,'0.70~0.79',
-          '0.80~1.00'))))
+df['cat']=np.where(df['ludi']<0.5,'0.00~0.49',
+          np.where(df['ludi']<0.6,'0.50~0.59',
+          np.where(df['ludi']<0.7,'0.60~0.69',
+          np.where(df['ludi']<0.8,'0.70~0.79',
+                   '0.80~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat3ludi.geojson',driver='GeoJSON')
 
 
@@ -221,11 +221,11 @@ df=pd.merge(nta,df,how='inner',on='ntacode')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
 df.to_file(path+'ntacat3ludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.5,'0.00~0.49',
-          np.where(df['ludi']<=0.6,'0.50~0.59',
-          np.where(df['ludi']<=0.7,'0.60~0.69',
-          np.where(df['ludi']<=0.8,'0.70~0.79',
-          '0.80~1.00'))))
+df['cat']=np.where(df['ludi']<0.5,'0.00~0.49',
+          np.where(df['ludi']<0.6,'0.50~0.59',
+          np.where(df['ludi']<0.7,'0.60~0.69',
+          np.where(df['ludi']<0.8,'0.70~0.79',
+                   '0.80~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat3ludi.geojson',driver='GeoJSON')
 
 
@@ -265,11 +265,11 @@ df['ludi']=-(df['respct']*df['reslog']+
             df['otherpct']*df['otherlog'])/np.log(5)
 df.to_file(path+'bkwkcat5ludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.4,'0.00~0.39',
-          np.where(df['ludi']<=0.5,'0.40~0.49',
-          np.where(df['ludi']<=0.6,'0.50~0.59',
-          np.where(df['ludi']<=0.7,'0.60~0.69',
-          '0.70~1.00'))))
+df['cat']=np.where(df['ludi']<0.4,'0.00~0.39',
+          np.where(df['ludi']<0.5,'0.40~0.49',
+          np.where(df['ludi']<0.6,'0.50~0.59',
+          np.where(df['ludi']<0.7,'0.60~0.69',
+                   '0.70~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat5ludi.geojson',driver='GeoJSON')
 
 
@@ -286,14 +286,14 @@ ct.crs=4326
 df=pd.merge(ct,df,how='inner',on='tractid')
 cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid')
-df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','bldg','ludi','geometry']].reset_index(drop=True)
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','ludi','geometry']].reset_index(drop=True)
 df.to_file(path+'ctcat5ludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.4,'0.00~0.39',
-          np.where(df['ludi']<=0.5,'0.40~0.49',
-          np.where(df['ludi']<=0.6,'0.50~0.59',
-          np.where(df['ludi']<=0.7,'0.60~0.69',
-          '0.70~1.00'))))
+df['cat']=np.where(df['ludi']<0.4,'0.00~0.39',
+          np.where(df['ludi']<0.5,'0.40~0.49',
+          np.where(df['ludi']<0.6,'0.50~0.59',
+          np.where(df['ludi']<0.7,'0.60~0.69',
+                   '0.70~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat5ludi.geojson',driver='GeoJSON')
 
 
@@ -313,18 +313,18 @@ df=pd.merge(nta,df,how='inner',on='ntacode')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
 df.to_file(path+'ntacat5ludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.4,'0.00~0.39',
-          np.where(df['ludi']<=0.5,'0.40~0.49',
-          np.where(df['ludi']<=0.6,'0.50~0.59',
-          np.where(df['ludi']<=0.7,'0.60~0.69',
-          '0.70~1.00'))))
+df['cat']=np.where(df['ludi']<0.4,'0.00~0.39',
+          np.where(df['ludi']<0.5,'0.40~0.49',
+          np.where(df['ludi']<0.6,'0.50~0.59',
+          np.where(df['ludi']<0.7,'0.60~0.69',
+                   '0.70~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat5ludi.geojson',driver='GeoJSON')
 
 
 
 
 
-# Cat5 Weighted
+# Cat5 Adjusted
 # Block
 df=gpd.read_file(path+'bkwklu.shp')
 df.crs=4326
@@ -333,82 +333,83 @@ cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99'])].reset_index(drop=True)
 df=df.drop(['tractid','ntacode'],axis=1)
-df['cat5res']=df['res'].copy()
-df['cat5off']=df['off'].copy()
-df['cat5ret']=df['ret'].copy()
-df['cat5ind']=df['grg']+df['stg']+df['fct']
-df['cat5other']=df['oth'].copy()
-df['respct']=df['cat5res']/df['bldg']
-df['offpct']=df['cat5off']/df['bldg']
-df['retpct']=df['cat5ret']/df['bldg']
-df['indpct']=df['cat5ind']/df['bldg']
-df['otherpct']=df['cat5other']/df['bldg']
+df['cat5res']=df['res']*1
+df['cat5off']=df['off']*1.5
+df['cat5ret']=df['ret']*10
+df['cat5ind']=(df['grg']+df['stg']+df['fct'])*0.5
+df['cat5other']=df['oth']*1
+df['bldgadj']=df['cat5res']+df['cat5off']+df['cat5ret']+df['cat5ind']+df['cat5other']
+df['respct']=df['cat5res']/df['bldgadj']
+df['offpct']=df['cat5off']/df['bldgadj']
+df['retpct']=df['cat5ret']/df['bldgadj']
+df['indpct']=df['cat5ind']/df['bldgadj']
+df['otherpct']=df['cat5other']/df['bldgadj']
 df['reslog']=np.where(df['cat5res']>0,np.log(df['respct']),0)
 df['offlog']=np.where(df['cat5off']>0,np.log(df['offpct']),0)
 df['retlog']=np.where(df['cat5ret']>0,np.log(df['retpct']),0)
 df['indlog']=np.where(df['cat5ind']>0,np.log(df['indpct']),0)
 df['otherlog']=np.where(df['cat5other']>0,np.log(df['otherpct']),0)
-df['ludi']=-(df['respct']*df['reslog']*1+
-            df['offpct']*df['offlog']*1+
-            df['retpct']*df['retlog']*5+
-            df['indpct']*df['indlog']*0.25+
-            df['otherpct']*df['otherlog']*1)/np.log(1+1+5+0.25+1)
-df.to_file(path+'bkwkcat5wgtludi.shp')
+df['ludi']=-(df['respct']*df['reslog']+
+            df['offpct']*df['offlog']+
+            df['retpct']*df['retlog']+
+            df['indpct']*df['indlog']+
+            df['otherpct']*df['otherlog'])/np.log(5)
+df.to_file(path+'bkwkcat5adjludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.5,'0.00~0.49',
-          np.where(df['ludi']<=0.6,'0.50~0.59',
-          np.where(df['ludi']<=0.7,'0.60~0.69',
-          np.where(df['ludi']<=0.8,'0.70~0.79',
-          '0.80~1.00'))))
-df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat5wgtludi.geojson',driver='GeoJSON')
+df['cat']=np.where(df['ludi']<0.6,'0.00~0.59',
+          np.where(df['ludi']<0.65,'0.60~0.64',
+          np.where(df['ludi']<0.7,'0.65~0.69',
+          np.where(df['ludi']<0.75,'0.70~0.74',
+                   '0.75~1.00'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat5adjludi.geojson',driver='GeoJSON')
 
 
 
 # Tract
-df=gpd.read_file(path+'bkwkcat5wgtludi.shp')
+df=gpd.read_file(path+'bkwkcat5adjludi.shp')
 df.crs=4326
 df['tractid']=[str(x)[0:11] for x in df['blockid']]
-df['bldgludi']=df['bldg']*df['ludi']
-df=df.groupby(['tractid'],as_index=False).agg({'bldgludi':'sum','bldg':'sum'}).reset_index(drop=True)
-df['ludi']=df['bldgludi']/df['bldg']
+df['bldgadjludi']=df['bldgadj']*df['ludi']
+df=df.groupby(['tractid'],as_index=False).agg({'bldgadjludi':'sum','bldgadj':'sum'}).reset_index(drop=True)
+df['ludi']=df['bldgadjludi']/df['bldgadj']
 ct=gpd.read_file(path+'nycctclipped.shp')
 ct.crs=4326
 df=pd.merge(ct,df,how='inner',on='tractid')
 cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid')
-df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','bldg','ludi','geometry']].reset_index(drop=True)
-df.to_file(path+'ctcat5wgtludi.shp')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','ludi','geometry']].reset_index(drop=True)
+df.to_file(path+'ctcat5adjludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.5,'0.00~0.49',
-          np.where(df['ludi']<=0.6,'0.50~0.59',
-          np.where(df['ludi']<=0.7,'0.60~0.69',
-          np.where(df['ludi']<=0.8,'0.70~0.79',
-          '0.80~1.00'))))
-df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat5wgtludi.geojson',driver='GeoJSON')
+df['cat']=np.where(df['ludi']<0.6,'0.00~0.59',
+          np.where(df['ludi']<0.65,'0.60~0.64',
+          np.where(df['ludi']<0.7,'0.65~0.69',
+          np.where(df['ludi']<0.75,'0.70~0.74',
+                   '0.75~1.00'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat5adjludi.geojson',driver='GeoJSON')
 
 
 
 # NTA
-df=gpd.read_file(path+'bkwkcat5wgtludi.shp')
+df=gpd.read_file(path+'bkwkcat5adjludi.shp')
 df.crs=4326
 df['tractid']=[str(x)[0:11] for x in df['blockid']]
 cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid')
-df['bldgludi']=df['bldg']*df['ludi']
-df=df.groupby(['ntacode'],as_index=False).agg({'bldgludi':'sum','bldg':'sum'}).reset_index(drop=True)
-df['ludi']=df['bldgludi']/df['bldg']
+df['bldgadjludi']=df['bldgadj']*df['ludi']
+df=df.groupby(['ntacode'],as_index=False).agg({'bldgadjludi':'sum','bldgadj':'sum'}).reset_index(drop=True)
+df['ludi']=df['bldgadjludi']/df['bldgadj']
 nta=gpd.read_file(path+'ntaclipped.shp')
 nta.crs=4326
 df=pd.merge(nta,df,how='inner',on='ntacode')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
-df.to_file(path+'ntacat5wgtludi.shp')
+df.to_file(path+'ntacat5adjludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<=0.5,'0.00~0.49',
-          np.where(df['ludi']<=0.6,'0.50~0.59',
-          np.where(df['ludi']<=0.7,'0.60~0.69',
-          np.where(df['ludi']<=0.8,'0.70~0.79',
-          '0.80~1.00'))))
-df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat5wgtludi.geojson',driver='GeoJSON')
+df['cat']=np.where(df['ludi']<0.6,'0.00~0.59',
+          np.where(df['ludi']<0.65,'0.60~0.64',
+          np.where(df['ludi']<0.7,'0.65~0.69',
+          np.where(df['ludi']<0.75,'0.70~0.74',
+                   '0.75~1.00'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat5adjludi.geojson',driver='GeoJSON')
 
 
 
