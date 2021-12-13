@@ -142,6 +142,7 @@
             <option value='cat3'>Res+OffRet+Other</option>
             <option value='cat5'>Res+Off+Ret+Ind+Other</option>
             <option value='cat5adj'>Res*1+Off*1.5+Ret*10+Ind*0.5+Other*1</option>
+            <option value='cat5adj2'>Res*1+Off*0.5+Ret*10+Ind*0.5+Other*1</option>
         </select>
         <br>
         <label>
@@ -670,6 +671,155 @@
 
 
 
+            // Add Census Block Cat5 Adjusted 2 LUDI
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'bkwkcat5adj2ludi', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'bkwkcat5adj2ludi.geojson', // data source
+                'layerid': 'bkwkcat5adj2ludi', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Census Tract Cat5 Adjusted 2 LUDI', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': ['0.00~0.54', '0.55~0.59', '0.60~0.64', '0.65~0.69', '0.70~1.00'], // categories
+                'layercolor': ['rgba(43,131,186,0.8)', 'rgba(171,221,164,0.8)', 'rgba(255,255,191,0.8)', 'rgba(253,174,97,0.8)', 'rgba(215,25,28,0.8)'], // extrusion color; use rgba
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+            // Add Census Tract Cat5 Adjusted 2 LUDI
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'ctcat5adj2ludi', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'ctcat5adj2ludi.geojson', // data source
+                'layerid': 'ctcat5adj2ludi', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Census Tract Cat5 Adjusted 2 LUDI', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': ['0.00~0.54', '0.55~0.59', '0.60~0.64', '0.65~0.69', '0.70~1.00'], // categories
+                'layercolor': ['rgba(43,131,186,0.8)', 'rgba(171,221,164,0.8)', 'rgba(255,255,191,0.8)', 'rgba(253,174,97,0.8)', 'rgba(215,25,28,0.8)'], // extrusion color; use rgba
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+            // Add NTA Cat5 Adjusted 2 LUDI
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'ntacat5adj2ludi', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'ntacat5adj2ludi.geojson', // data source
+                'layerid': 'ntacat5adj2ludi', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'NTA Cat5 Adjusted 2 LUDI', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': ['0.00~0.54', '0.55~0.59', '0.60~0.64', '0.65~0.69', '0.70~1.00'], // categories
+                'layercolor': ['rgba(43,131,186,0.8)', 'rgba(171,221,164,0.8)', 'rgba(255,255,191,0.8)', 'rgba(253,174,97,0.8)', 'rgba(215,25,28,0.8)'], // extrusion color; use rgba
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+
+
 
             // Add popup
             var popup = new mapboxgl.Popup({
@@ -754,7 +904,7 @@
             map.on('mouseleave', 'bkwkcat5ludi', function () {
                 map.getCanvas().style.cursor = '';
             });
-            
+
             // Add Census Tract Cat5 LUDI popup
             // Add click event
             map.on('click', 'ctcat5ludi', function (e) {
@@ -770,7 +920,7 @@
             map.on('mouseleave', 'ctcat5ludi', function () {
                 map.getCanvas().style.cursor = '';
             });
-            
+
             // Add NTA Cat5 LUDI popup
             // Add click event
             map.on('click', 'ntacat5ludi', function (e) {
@@ -844,12 +994,66 @@
             });
 
 
+            // Add Census Block Cat5 Adjusted 2 LUDI popup
+            // Add click event
+            map.on('click', 'bkwkcat5adj2ludi', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid + "</span><br>"; // description in the popup
+                description += "<b>Residential%​: </b><span>" + (Number(e.features[0].properties.respct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Office%​: </b><span>" + (Number(e.features[0].properties.offpct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Retail%​: </b><span>" + (Number(e.features[0].properties.retpct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Industrial%​: </b><span>" + (Number(e.features[0].properties.indpct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Other%​: </b><span>" + (Number(e.features[0].properties.otherpct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'bkwkcat5adj2ludi', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'bkwkcat5adj2ludi', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+            // Add Census Tract Cat5 Adjusted 2 LUDI popup
+            // Add click event
+            map.on('click', 'ctcat5adj2ludi', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'ctcat5adj2ludi', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'ctcat5adj2ludi', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+            // Add NTA Cat5 Adjusted 2 LUDI popup
+            // Add click event
+            map.on('click', 'ntacat5adj2ludi', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
+                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'ntacat5adj2ludi', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'ntacat5adj2ludi', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
 
 
 
 
             // Add layer selector and legend
-            var layerOrder = ['bkwkcat3ludi','ctcat3ludi', 'ntacat3ludi', 'bkwkcat5ludi','ctcat5ludi', 'ntacat5ludi', 'bkwkcat5adjludi','ctcat5adjludi', 'ntacat5adjludi']; // set layer order in the legend
+            var layerOrder = ['bkwkcat3ludi', 'ctcat3ludi', 'ntacat3ludi', 'bkwkcat5ludi', 'ctcat5ludi', 'ntacat5ludi', 'bkwkcat5adjludi', 'ctcat5adjludi', 'ntacat5adjludi', 'bkwkcat5adj2ludi','ctcat5adj2ludi', 'ntacat5adj2ludi']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);

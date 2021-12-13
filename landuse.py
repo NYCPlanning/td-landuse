@@ -415,6 +415,95 @@ df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat5adjludi.geojson'
 
 
 
+# Cat5 Adjusted 2
+# Block
+df=gpd.read_file(path+'bkwklu.shp')
+df.crs=4326
+df['tractid']=[str(x)[0:11] for x in df['blockid']]
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99'])].reset_index(drop=True)
+df=df.drop(['tractid','ntacode'],axis=1)
+df['cat5res']=df['res']*1
+df['cat5off']=df['off']*0.5
+df['cat5ret']=df['ret']*10
+df['cat5ind']=(df['grg']+df['stg']+df['fct'])*0.5
+df['cat5other']=df['oth']*1
+df['bldgadj']=df['cat5res']+df['cat5off']+df['cat5ret']+df['cat5ind']+df['cat5other']
+df['respct']=df['cat5res']/df['bldgadj']
+df['offpct']=df['cat5off']/df['bldgadj']
+df['retpct']=df['cat5ret']/df['bldgadj']
+df['indpct']=df['cat5ind']/df['bldgadj']
+df['otherpct']=df['cat5other']/df['bldgadj']
+df['reslog']=np.where(df['cat5res']>0,np.log(df['respct']),0)
+df['offlog']=np.where(df['cat5off']>0,np.log(df['offpct']),0)
+df['retlog']=np.where(df['cat5ret']>0,np.log(df['retpct']),0)
+df['indlog']=np.where(df['cat5ind']>0,np.log(df['indpct']),0)
+df['otherlog']=np.where(df['cat5other']>0,np.log(df['otherpct']),0)
+df['ludi']=-(df['respct']*df['reslog']+
+            df['offpct']*df['offlog']+
+            df['retpct']*df['retlog']+
+            df['indpct']*df['indlog']+
+            df['otherpct']*df['otherlog'])/np.log(5)
+df.to_file(path+'bkwkcat5adj2ludi.shp')
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<0.55,'0.00~0.54',
+          np.where(df['ludi']<0.6,'0.55~0.59',
+          np.where(df['ludi']<0.65,'0.60~0.64',
+          np.where(df['ludi']<0.7,'0.65~0.69',
+                   '0.70~1.00'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat5adj2ludi.geojson',driver='GeoJSON')
+
+
+
+# Tract
+df=gpd.read_file(path+'bkwkcat5adj2ludi.shp')
+df.crs=4326
+df['tractid']=[str(x)[0:11] for x in df['blockid']]
+df['bldgadjludi']=df['bldgadj']*df['ludi']
+df=df.groupby(['tractid'],as_index=False).agg({'bldgadjludi':'sum','bldgadj':'sum'}).reset_index(drop=True)
+df['ludi']=df['bldgadjludi']/df['bldgadj']
+ct=gpd.read_file(path+'nycctclipped.shp')
+ct.crs=4326
+df=pd.merge(ct,df,how='inner',on='tractid')
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','ludi','geometry']].reset_index(drop=True)
+df.to_file(path+'ctcat5adj2ludi.shp')
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<0.55,'0.00~0.54',
+          np.where(df['ludi']<0.6,'0.55~0.59',
+          np.where(df['ludi']<0.65,'0.60~0.64',
+          np.where(df['ludi']<0.7,'0.65~0.69',
+                   '0.70~1.00'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat5adj2ludi.geojson',driver='GeoJSON')
+
+
+
+# NTA
+df=gpd.read_file(path+'bkwkcat5adj2ludi.shp')
+df.crs=4326
+df['tractid']=[str(x)[0:11] for x in df['blockid']]
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df['bldgadjludi']=df['bldgadj']*df['ludi']
+df=df.groupby(['ntacode'],as_index=False).agg({'bldgadjludi':'sum','bldgadj':'sum'}).reset_index(drop=True)
+df['ludi']=df['bldgadjludi']/df['bldgadj']
+nta=gpd.read_file(path+'ntaclipped.shp')
+nta.crs=4326
+df=pd.merge(nta,df,how='inner',on='ntacode')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
+df.to_file(path+'ntacat5adj2ludi.shp')
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<0.55,'0.00~0.54',
+          np.where(df['ludi']<0.6,'0.55~0.59',
+          np.where(df['ludi']<0.65,'0.60~0.64',
+          np.where(df['ludi']<0.7,'0.65~0.69',
+                   '0.70~1.00'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat5adj2ludi.geojson',driver='GeoJSON')
+
+
+
 
 
 
