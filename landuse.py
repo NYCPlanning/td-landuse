@@ -513,11 +513,11 @@ df=df.drop(['tractid','ntacode'],axis=1)
 df['ludi']=np.where((df['res']==0)&(df['ret']==0),0,df['ret']/df['res'])
 df.to_file(path+'bkwkcat2ludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<0.03,'0.00~0.02',
-          np.where(df['ludi']<0.06,'0.03~0.05',
-          np.where(df['ludi']<0.09,'0.06~0.08',
-          np.where(df['ludi']<0.12,'0.09~0.11',
-                   '>=0.12'))))
+df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
+          np.where(df['ludi']<0.1,'0.05~0.09',
+          np.where(df['ludi']<0.15,'0.10~0.14',
+          np.where(df['ludi']<0.2,'0.15~0.19',
+                   '>=0.20'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat2ludi.geojson',driver='GeoJSON')
 
 
@@ -535,11 +535,11 @@ df=pd.merge(df,cttonta,how='inner',on='tractid')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','ludi','geometry']].reset_index(drop=True)
 df.to_file(path+'ctcat2ludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<0.03,'0.00~0.02',
-          np.where(df['ludi']<0.06,'0.03~0.05',
-          np.where(df['ludi']<0.09,'0.06~0.08',
-          np.where(df['ludi']<0.12,'0.09~0.11',
-                   '>=0.12'))))
+df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
+          np.where(df['ludi']<0.1,'0.05~0.09',
+          np.where(df['ludi']<0.15,'0.10~0.14',
+          np.where(df['ludi']<0.2,'0.15~0.19',
+                   '>=0.20'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat2ludi.geojson',driver='GeoJSON')
 
 
@@ -557,12 +557,20 @@ df=pd.merge(nta,df,how='inner',on='ntacode')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
 df.to_file(path+'ntacat2ludi.shp')
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<0.03,'0.00~0.02',
-          np.where(df['ludi']<0.06,'0.03~0.05',
-          np.where(df['ludi']<0.09,'0.06~0.08',
-          np.where(df['ludi']<0.12,'0.09~0.11',
-                   '>=0.12'))))
+df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
+          np.where(df['ludi']<0.1,'0.05~0.09',
+          np.where(df['ludi']<0.15,'0.10~0.14',
+          np.where(df['ludi']<0.2,'0.15~0.19',
+                   '>=0.20'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat2ludi.geojson',driver='GeoJSON')
+
+
+
+
+
+
+
+
 
 
 
