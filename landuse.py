@@ -181,7 +181,6 @@ df['cat']=np.where(df['ludi']<0.5,'0.00~0.49',
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat3ludi.geojson',driver='GeoJSON')
 
 
-
 # Tract
 df=gpd.read_file(path+'bkwkcat3ludi.shp')
 df.crs=4326
@@ -203,7 +202,6 @@ df['cat']=np.where(df['ludi']<0.5,'0.00~0.49',
           np.where(df['ludi']<0.8,'0.70~0.79',
                    '0.80~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat3ludi.geojson',driver='GeoJSON')
-
 
 
 # NTA
@@ -273,7 +271,6 @@ df['cat']=np.where(df['ludi']<0.4,'0.00~0.39',
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat5ludi.geojson',driver='GeoJSON')
 
 
-
 # Tract
 df=gpd.read_file(path+'bkwkcat5ludi.shp')
 df.crs=4326
@@ -295,7 +292,6 @@ df['cat']=np.where(df['ludi']<0.4,'0.00~0.39',
           np.where(df['ludi']<0.7,'0.60~0.69',
                    '0.70~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat5ludi.geojson',driver='GeoJSON')
-
 
 
 # NTA
@@ -364,7 +360,6 @@ df['cat']=np.where(df['ludi']<0.6,'0.00~0.59',
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat5adjludi.geojson',driver='GeoJSON')
 
 
-
 # Tract
 df=gpd.read_file(path+'bkwkcat5adjludi.shp')
 df.crs=4326
@@ -386,7 +381,6 @@ df['cat']=np.where(df['ludi']<0.6,'0.00~0.59',
           np.where(df['ludi']<0.75,'0.70~0.74',
                    '0.75~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat5adjludi.geojson',driver='GeoJSON')
-
 
 
 # NTA
@@ -455,7 +449,6 @@ df['cat']=np.where(df['ludi']<0.55,'0.00~0.54',
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat5adj2ludi.geojson',driver='GeoJSON')
 
 
-
 # Tract
 df=gpd.read_file(path+'bkwkcat5adj2ludi.shp')
 df.crs=4326
@@ -477,7 +470,6 @@ df['cat']=np.where(df['ludi']<0.55,'0.00~0.54',
           np.where(df['ludi']<0.7,'0.65~0.69',
                    '0.70~1.00'))))
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat5adj2ludi.geojson',driver='GeoJSON')
-
 
 
 # NTA
@@ -509,7 +501,68 @@ df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat5adj2ludi.geojson
 
 
 
+# Access to Retail
+# Block
+df=gpd.read_file(path+'bkwklu.shp')
+df.crs=4326
+df['tractid']=[str(x)[0:11] for x in df['blockid']]
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99'])].reset_index(drop=True)
+df=df.drop(['tractid','ntacode'],axis=1)
+df['ludi']=np.where((df['res']==0)&(df['ret']==0),0,df['ret']/df['res'])
+df.to_file(path+'bkwkcat2ludi.shp')
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<0.03,'0.00~0.02',
+          np.where(df['ludi']<0.06,'0.03~0.05',
+          np.where(df['ludi']<0.09,'0.06~0.08',
+          np.where(df['ludi']<0.12,'0.09~0.11',
+                   '>=0.12'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat2ludi.geojson',driver='GeoJSON')
 
+
+# Tract
+df=gpd.read_file(path+'bkwkcat2ludi.shp')
+df.crs=4326
+df['tractid']=[str(x)[0:11] for x in df['blockid']]
+df=df.groupby(['tractid'],as_index=False).agg({'res':'sum','ret':'sum'}).reset_index(drop=True)
+df['ludi']=df['ret']/(df['res']+df['ret'])
+ct=gpd.read_file(path+'nycctclipped.shp')
+ct.crs=4326
+df=pd.merge(ct,df,how='inner',on='tractid')
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','ludi','geometry']].reset_index(drop=True)
+df.to_file(path+'ctcat2ludi.shp')
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<0.03,'0.00~0.02',
+          np.where(df['ludi']<0.06,'0.03~0.05',
+          np.where(df['ludi']<0.09,'0.06~0.08',
+          np.where(df['ludi']<0.12,'0.09~0.11',
+                   '>=0.12'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat2ludi.geojson',driver='GeoJSON')
+
+
+# NTA
+df=gpd.read_file(path+'bkwkcat2ludi.shp')
+df.crs=4326
+df['tractid']=[str(x)[0:11] for x in df['blockid']]
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df=df.groupby(['ntacode'],as_index=False).agg({'res':'sum','ret':'sum'}).reset_index(drop=True)
+df['ludi']=df['ret']/(df['res']+df['ret'])
+nta=gpd.read_file(path+'ntaclipped.shp')
+nta.crs=4326
+df=pd.merge(nta,df,how='inner',on='ntacode')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
+df.to_file(path+'ntacat2ludi.shp')
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<0.03,'0.00~0.02',
+          np.where(df['ludi']<0.06,'0.03~0.05',
+          np.where(df['ludi']<0.09,'0.06~0.08',
+          np.where(df['ludi']<0.12,'0.09~0.11',
+                   '>=0.12'))))
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat2ludi.geojson',driver='GeoJSON')
 
 
 
