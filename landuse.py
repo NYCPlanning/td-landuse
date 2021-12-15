@@ -518,6 +518,15 @@ df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
           np.where(df['ludi']<0.15,'0.10~0.14',
           np.where(df['ludi']<0.2,'0.15~0.19',
                    '>=0.20'))))
+df.loc[(df['ludi']>0)&(df['ludi']<=0.3),'ludi'].hist(bins=100)
+m=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].mean()
+s=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].std()
+df['score']=np.where(df['ludi']>=m+1.5*s,'Very High', 
+            np.where(df['ludi']>=m+0.5*s,'High',
+            np.where(df['ludi']>=m-0.5*s,'Medium',
+            np.where(df['ludi']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkcat2ludi.geojson',driver='GeoJSON')
 
 
@@ -540,6 +549,15 @@ df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
           np.where(df['ludi']<0.15,'0.10~0.14',
           np.where(df['ludi']<0.2,'0.15~0.19',
                    '>=0.20'))))
+df.loc[(df['ludi']>0)&(df['ludi']<=0.2),'ludi'].hist(bins=100)
+m=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].mean()
+s=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].std()
+df['score']=np.where(df['ludi']>=m+1.5*s,'Very High', 
+            np.where(df['ludi']>=m+0.5*s,'High',
+            np.where(df['ludi']>=m-0.5*s,'Medium',
+            np.where(df['ludi']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat2ludi.geojson',driver='GeoJSON')
 
 
@@ -562,6 +580,15 @@ df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
           np.where(df['ludi']<0.15,'0.10~0.14',
           np.where(df['ludi']<0.2,'0.15~0.19',
                    '>=0.20'))))
+df.loc[(df['ludi']>0)&(df['ludi']<=0.2),'ludi'].hist(bins=100)
+m=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].mean()
+s=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].std()
+df['score']=np.where(df['ludi']>=m+1.5*s,'Very High', 
+            np.where(df['ludi']>=m+0.5*s,'High',
+            np.where(df['ludi']>=m-0.5*s,'Medium',
+            np.where(df['ludi']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat2ludi.geojson',driver='GeoJSON')
 
 
