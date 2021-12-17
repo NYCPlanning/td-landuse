@@ -556,6 +556,11 @@ df['score']=np.where(df['ludi']>=m+1.5*s,'Very High',
             np.where(df['ludi']>=m+0.5*s,'High',
             np.where(df['ludi']>=m-0.5*s,'Medium',
             np.where(df['ludi']>=m-1.5*s,'Low','Very Low'))))
+df['cat']=np.where(df['ludi']<0.02,'0.00~0.01',
+          np.where(df['ludi']<0.05,'0.02~0.04',
+          np.where(df['ludi']<0.07,'0.05~0.06',
+          np.where(df['ludi']<0.10,'0.07~0.09',
+                   '>=0.10'))))
 df['score'].hist()
 df['score'].value_counts()
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat2ludi.geojson',driver='GeoJSON')
