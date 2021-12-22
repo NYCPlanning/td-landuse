@@ -512,6 +512,13 @@ df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI9
 df=df.drop(['tractid','ntacode'],axis=1)
 df['ludi']=np.where((df['res']==0)&(df['ret']==0),0,df['ret']/df['res'])
 df.to_file(path+'bkwkcat2ludi.shp')
+dfinf=df[df['ludi']==np.inf].reset_index(drop=True)
+dfinf['pct']=99
+df0=df[df['ludi']==0].reset_index(drop=True)
+df0['pct']=0
+df=df[(df['ludi']!=0)&(df['ludi']!=np.inf)].reset_index(drop=True)
+df['pct']=pd.qcut(df['ludi'],100,labels=False)
+df=pd.concat([df0,df,dfinf],axis=0,ignore_index=True)
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
 df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
           np.where(df['ludi']<0.1,'0.05~0.09',
@@ -543,12 +550,13 @@ cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','ludi','geometry']].reset_index(drop=True)
 df.to_file(path+'ctcat2ludi.shp')
+df['pct']=pd.qcut(df['ludi'],100,labels=False)
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
-          np.where(df['ludi']<0.1,'0.05~0.09',
-          np.where(df['ludi']<0.15,'0.10~0.14',
-          np.where(df['ludi']<0.2,'0.15~0.19',
-                   '>=0.20'))))
+df['cat']=np.where(df['ludi']<0.02,'0.00~0.01',
+          np.where(df['ludi']<0.05,'0.02~0.04',
+          np.where(df['ludi']<0.07,'0.05~0.06',
+          np.where(df['ludi']<0.10,'0.07~0.09',
+                   '>=0.10'))))
 df.loc[(df['ludi']>0)&(df['ludi']<=0.2),'ludi'].hist(bins=100)
 m=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].mean()
 s=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].std()
@@ -556,11 +564,6 @@ df['score']=np.where(df['ludi']>=m+1.5*s,'Very High',
             np.where(df['ludi']>=m+0.5*s,'High',
             np.where(df['ludi']>=m-0.5*s,'Medium',
             np.where(df['ludi']>=m-1.5*s,'Low','Very Low'))))
-df['cat']=np.where(df['ludi']<0.02,'0.00~0.01',
-          np.where(df['ludi']<0.05,'0.02~0.04',
-          np.where(df['ludi']<0.07,'0.05~0.06',
-          np.where(df['ludi']<0.10,'0.07~0.09',
-                   '>=0.10'))))
 df['score'].hist()
 df['score'].value_counts()
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat2ludi.geojson',driver='GeoJSON')
@@ -579,6 +582,7 @@ nta.crs=4326
 df=pd.merge(nta,df,how='inner',on='ntacode')
 df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
 df.to_file(path+'ntacat2ludi.shp')
+df['pct']=pd.qcut(df['ludi'],100,labels=False)
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
 df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
           np.where(df['ludi']<0.1,'0.05~0.09',

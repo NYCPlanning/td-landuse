@@ -1274,6 +1274,8 @@
                 description += "<b>Residential Sqft​: </b><span>" + (Number(e.features[0].properties.res)).toLocaleString() + "</span><br>";
                 description += "<b>Retail Sqft​: </b><span>" + (Number(e.features[0].properties.ret)).toLocaleString() + "</span><br>";
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.pct + "%</span><br>";
+                description += "<b>Category: </b><span>" + e.features[0].properties.score + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
@@ -1290,6 +1292,8 @@
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.pct + "%</span><br>";
+                description += "<b>Category: </b><span>" + e.features[0].properties.score + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
@@ -1307,6 +1311,8 @@
                 var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.pct + "%</span><br>";
+                description += "<b>Category: </b><span>" + e.features[0].properties.score + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
