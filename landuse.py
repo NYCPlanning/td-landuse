@@ -8,6 +8,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import plotly.io as pio
 from sklearn.cluster import KMeans
+from geosupport import Geosupport
 
 
 
@@ -651,14 +652,6 @@ y=km.fit_predict(df[['respct','offretpct','otherpct']])
 df['pctcluster']=y+1
 df.to_file(path+'ctlucluster.shp')
 
-
-
-
-
-
-
-
-
 # k=[]
 # for i in range(0,100000):
 #     a=np.random.uniform(0,1)
@@ -667,4 +660,100 @@ df.to_file(path+'ctlucluster.shp')
 #     lum=-(a*np.log(a)+b*np.log(b)+c*np.log(c))/np.log(3)
 #     k+=[lum]
 # px.histogram(k)
+
+
+
+
+
+
+
+
+
+
+
+
+# Access to Amenities
+# ATM
+atm=gpd.read_file(path+'amenities/BankOwnedATMLocations_191106/BankOwnedATMLocations_191106.shp')
+atm.crs=6318
+atm=atm.to_crs(4326)
+atm['atm']=1
+atm=atm[['atm','geometry']].reset_index(drop=True)
+# Day Care
+daycare=gpd.read_file(path+'amenities/FacilitiesDayCare_191106/FacilitiesDayCare_191106.shp')
+daycare.crs=4326
+daycare['daycare']=1
+daycare=daycare[['daycare','geometry']].reset_index(drop=True)
+# Grocery Store
+grocery=gpd.read_file(path+'amenities/GroceryStoresNYC_180802/GroceryStoresNYC_180802.shp')
+grocery.crs=6539
+grocery=grocery.to_crs(4326)
+grocery['grocery']=1
+grocery=grocery[['grocery','geometry']].reset_index(drop=True)
+# Laundry
+laundry=gpd.read_file(path+'amenities/LegallyOperatingBusinessesActiveSelfServiceLaundry_191106/LegallyOperatingBusinessesActiveSelfServiceLaundry_191106.shp')
+laundry.crs=6539
+laundry=laundry.to_crs(4326)
+laundry['laundry']=1
+laundry=laundry[['laundry','geometry']].reset_index(drop=True)
+# Pharmacy
+pharmacy=gpd.read_file(path+'amenities/PharmaciesMedicaidEnrolled_191106/PharmaciesMedicaidEnrolled_191106.shp')
+pharmacy.crs=6318
+pharmacy=pharmacy.to_crs(4326)
+pharmacy=pharmacy.drop_duplicates(['SERVICE_AD','CITY','STATE'],keep='first').reset_index(drop=True)
+pharmacy['pharmacy']=1
+pharmacy=pharmacy[['pharmacy','geometry']].reset_index(drop=True)
+# Combine all
+df=pd.concat([atm,daycare,grocery,laundry,pharmacy],axis=0,ignore_index=True)
+df=df.fillna(0)
+# Join to Walkshed
+bkwk=gpd.read_file(path+'otpbkwk.shp')
+bkwk.crs=4326
+df=gpd.sjoin(bkwk,df,how='inner',op='intersects')
+df=df.groupby(['blockid'],as_index=False).agg({'atm':'sum','daycare':'sum','grocery':'sum','laundry':'sum',
+                                               'pharmacy':'sum'}).reset_index(drop=True)
+bk=gpd.read_file(path+'nycbkclipped.shp')
+bk.crs=4326
+df=pd.merge(bk,df,how='left',on='blockid')
+pop=pd.read_csv(path+'pop2020.csv',dtype={'GEOID':str,'POP2020':float})
+pop['blockid']=pop['GEOID'].copy()
+pop['pop2020']=pop['POP2020'].copy()
+pop=pop[['blockid','pop2020']].reset_index(drop=True)
+df=pd.merge(df,pop,how='left',on='blockid')
+df=df.fillna(0)
+df['amenities']=df['atm']+df['daycare']+df['grocery']+df['laundry']+df['pharmacy']
+df['amenpop']=np.where(df['pop2020']==0,df['amenities']/df['pop2020']
+
+df['tractid']=[str(x)[0:11] for x in df['blockid']]
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99'])].reset_index(drop=True)
+df=df.drop(['tractid','ntacode'],axis=1)
+
+df['ludi']=np.where((df['res']==0)&(df['ret']==0),0,df['ret']/df['res'])
+df.to_file(path+'bkwkcat2ludi.shp')
+dfinf=df[df['ludi']==np.inf].reset_index(drop=True)
+dfinf['pct']=99
+df0=df[df['ludi']==0].reset_index(drop=True)
+df0['pct']=0
+df=df[(df['ludi']!=0)&(df['ludi']!=np.inf)].reset_index(drop=True)
+df['pct']=pd.qcut(df['ludi'],100,labels=False)
+df=pd.concat([df0,df,dfinf],axis=0,ignore_index=True)
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
+          np.where(df['ludi']<0.1,'0.05~0.09',
+          np.where(df['ludi']<0.15,'0.10~0.14',
+          np.where(df['ludi']<0.2,'0.15~0.19',
+                   '>=0.20'))))
+df.loc[(df['ludi']>0)&(df['ludi']<=0.3),'ludi'].hist(bins=100)
+m=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].mean()
+s=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].std()
+df['score']=np.where(df['ludi']>=m+1.5*s,'Very High', 
+            np.where(df['ludi']>=m+0.5*s,'High',
+            np.where(df['ludi']>=m-0.5*s,'Medium',
+            np.where(df['ludi']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
+
+df.to_file(path+'bkwklu.shp')
 
