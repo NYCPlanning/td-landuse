@@ -97,41 +97,43 @@ df['oth']=df['OtherArea'].copy()
 df=df.groupby(['blockid20'],as_index=False).agg({'res':'sum','off':'sum','ret':'sum','grg':'sum',
                                                  'stg':'sum','fct':'sum','oth':'sum','bldg':'sum',
                                                  'shape':'sum'}).reset_index(drop=True)
+pop=pd.read_csv(path+'pop2020.csv',dtype={'blockid20':str,'pop20':float})
+df=pd.merge(df,pop,how='left',on='blockid20')
 bk=gpd.read_file(path+'nycbkclipped20.shp')
 bk.crs=4326
 df=pd.merge(bk,df,how='inner',on='blockid20')
 df.to_file(path+'bklu20.shp')
 
-# Tract
-df=gpd.read_file(path+'mappluto21.shp')
-df.crs=4326
-df['county']=df['Borough'].map({'BX':'36005','BK':'36047','MN':'36061','QN':'36081','SI':'36085'})
-# df['tract']=pd.to_numeric(df['CT2010'])
-# df=df[pd.notna(df['tract'])].reset_index(drop=True)
-# df['tract']=[str(int(x*100)).zfill(6) for x in df['tract']]
-# df['tractid']=df['county']+df['tract']
-df['tract']=[str(x)[1:] for x in df['BCT2020']]
-df['tractid20']=df['county']+df['tract']
-df['shape']=df['Shape_Area'].copy()
-df['bldg']=df['ResArea']+df['OfficeArea']+df['RetailArea']+df['GarageArea']+df['StrgeArea']+df['FactryArea']+df['OtherArea']
-df=df[df['bldg']!=0].reset_index(drop=True)
-df['ttfar']=df['ResidFAR']+df['CommFAR']+df['FacilFAR']
-df['btfar']=df['bldg']/df['shape']
-df=df[df['btfar']<=40].reset_index(drop=True)
-df['res']=df['ResArea'].copy()
-df['off']=df['OfficeArea'].copy()
-df['ret']=df['RetailArea'].copy()
-df['grg']=df['GarageArea'].copy()
-df['stg']=df['StrgeArea'].copy()
-df['fct']=df['FactryArea'].copy()
-df['oth']=df['OtherArea'].copy()
-df=df.groupby(['tractid20'],as_index=False).agg({'res':'sum','off':'sum','ret':'sum','grg':'sum',
-                                                 'stg':'sum','fct':'sum','oth':'sum','bldg':'sum',
-                                                 'shape':'sum'}).reset_index(drop=True)
-ct=gpd.read_file(path+'nycctclipped20.shp')
-ct.crs=4326
-df=pd.merge(ct,df,how='inner',on='tractid20')
-df.to_file(path+'ctlu20.shp')
+# # Tract
+# df=gpd.read_file(path+'mappluto21.shp')
+# df.crs=4326
+# df['county']=df['Borough'].map({'BX':'36005','BK':'36047','MN':'36061','QN':'36081','SI':'36085'})
+# # df['tract']=pd.to_numeric(df['CT2010'])
+# # df=df[pd.notna(df['tract'])].reset_index(drop=True)
+# # df['tract']=[str(int(x*100)).zfill(6) for x in df['tract']]
+# # df['tractid']=df['county']+df['tract']
+# df['tract']=[str(x)[1:] for x in df['BCT2020']]
+# df['tractid20']=df['county']+df['tract']
+# df['shape']=df['Shape_Area'].copy()
+# df['bldg']=df['ResArea']+df['OfficeArea']+df['RetailArea']+df['GarageArea']+df['StrgeArea']+df['FactryArea']+df['OtherArea']
+# df=df[df['bldg']!=0].reset_index(drop=True)
+# df['ttfar']=df['ResidFAR']+df['CommFAR']+df['FacilFAR']
+# df['btfar']=df['bldg']/df['shape']
+# df=df[df['btfar']<=40].reset_index(drop=True)
+# df['res']=df['ResArea'].copy()
+# df['off']=df['OfficeArea'].copy()
+# df['ret']=df['RetailArea'].copy()
+# df['grg']=df['GarageArea'].copy()
+# df['stg']=df['StrgeArea'].copy()
+# df['fct']=df['FactryArea'].copy()
+# df['oth']=df['OtherArea'].copy()
+# df=df.groupby(['tractid20'],as_index=False).agg({'res':'sum','off':'sum','ret':'sum','grg':'sum',
+#                                                  'stg':'sum','fct':'sum','oth':'sum','bldg':'sum',
+#                                                  'shape':'sum'}).reset_index(drop=True)
+# ct=gpd.read_file(path+'nycctclipped20.shp')
+# ct.crs=4326
+# df=pd.merge(ct,df,how='inner',on='tractid20')
+# df.to_file(path+'ctlu20.shp')
 
 
 
@@ -151,8 +153,8 @@ bklu.crs=4326
 df=pd.merge(df,bklu,how='inner',left_on='blockid20_right',right_on='blockid20')
 df=df.groupby(['blockid20_left'],as_index=False).agg({'res':'sum','off':'sum','ret':'sum','grg':'sum',
                                                       'stg':'sum','fct':'sum','oth':'sum','bldg':'sum',
-                                                      'shape':'sum'}).reset_index(drop=True)
-df.columns=['blockid20','res','off','ret','grg','stg','fct','oth','bldg','shape']
+                                                      'shape':'sum','pop20':'sum'}).reset_index(drop=True)
+df.columns=['blockid20','res','off','ret','grg','stg','fct','oth','bldg','shape','pop20']
 df=pd.merge(bk,df,how='inner',on='blockid20')
 df.to_file(path+'bkwklu20.shp')
 
@@ -547,21 +549,20 @@ df=pd.merge(df,cttonta,how='inner',on='tractid20')
 # df=df.drop(['tractid','ntacode'],axis=1)
 df=df[df['ntatype']=='0'].reset_index(drop=True)
 df=df.drop(['tractid20','ntacode20','ntaname','ntatype'],axis=1)
-df['ludi']=np.where((df['res']==0)&(df['ret']==0),0,df['ret']/df['res'])
+df['ludi']=np.where((df['ret']==0)|(df['res']==0),0,df['ret']/df['res'])
 df.to_file(path+'bkwkcat2ludi.shp')
-dfinf=df[df['ludi']==np.inf].reset_index(drop=True)
-dfinf['pct']=99
 df0=df[df['ludi']==0].reset_index(drop=True)
 df0['pct']=0
-df=df[(df['ludi']!=0)&(df['ludi']!=np.inf)].reset_index(drop=True)
+df=df[df['ludi']!=0].reset_index(drop=True)
 df['pct']=pd.qcut(df['ludi'],100,labels=False)
-df=pd.concat([df0,df,dfinf],axis=0,ignore_index=True)
+df=pd.concat([df0,df],axis=0,ignore_index=True)
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
 df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
           np.where(df['ludi']<0.1,'0.05~0.09',
           np.where(df['ludi']<0.15,'0.10~0.14',
           np.where(df['ludi']<0.2,'0.15~0.19',
                    '>=0.20'))))
+df['cat'].value_counts()
 df.loc[(df['ludi']>0)&(df['ludi']<=0.3),'ludi'].hist(bins=100)
 m=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].mean()
 s=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].std()
@@ -590,13 +591,18 @@ df=pd.merge(df,cttonta,how='inner',on='tractid20')
 df=df[df['ntatype']=='0'].reset_index(drop=True)
 df=df.drop(['ntacode20','ntaname','ntatype'],axis=1)
 df.to_file(path+'ctcat2ludi.shp')
+df0=df[df['ludi']==0].reset_index(drop=True)
+df0['pct']=0
+df=df[df['ludi']!=0].reset_index(drop=True)
 df['pct']=pd.qcut(df['ludi'],100,labels=False)
+df=pd.concat([df0,df],axis=0,ignore_index=True)
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
 df['cat']=np.where(df['ludi']<0.02,'0.00~0.01',
           np.where(df['ludi']<0.05,'0.02~0.04',
           np.where(df['ludi']<0.07,'0.05~0.06',
           np.where(df['ludi']<0.10,'0.07~0.09',
                    '>=0.10'))))
+df['cat'].value_counts()
 df.loc[(df['ludi']>0)&(df['ludi']<=0.2),'ludi'].hist(bins=100)
 m=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].mean()
 s=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].std()
@@ -623,13 +629,18 @@ df=pd.merge(nta,df,how='inner',on='ntacode20')
 # df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
 df=df[df['ntatype']=='0'].reset_index(drop=True)
 df.to_file(path+'ntacat2ludi.shp')
+df0=df[df['ludi']==0].reset_index(drop=True)
+df0['pct']=0
+df=df[df['ludi']!=0].reset_index(drop=True)
 df['pct']=pd.qcut(df['ludi'],100,labels=False)
+df=pd.concat([df0,df],axis=0,ignore_index=True)
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
 df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
           np.where(df['ludi']<0.1,'0.05~0.09',
           np.where(df['ludi']<0.15,'0.10~0.14',
           np.where(df['ludi']<0.2,'0.15~0.19',
                    '>=0.20'))))
+df['cat'].value_counts()
 df.loc[(df['ludi']>0)&(df['ludi']<=0.2),'ludi'].hist(bins=100)
 m=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].mean()
 s=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].std()
@@ -747,45 +758,86 @@ pharmacy=pharmacy[['pharmacy','geometry']].reset_index(drop=True)
 df=pd.concat([atm,daycare,grocery,laundry,pharmacy],axis=0,ignore_index=True)
 df=df.fillna(0)
 # Join to Walkshed
-bkwk=gpd.read_file(path+'otpbkwk.shp')
+bkwk=gpd.read_file(path+'otpbkwk20.shp')
 bkwk.crs=4326
 df=gpd.sjoin(bkwk,df,how='inner',op='intersects')
-df=df.groupby(['blockid'],as_index=False).agg({'atm':'sum','daycare':'sum','grocery':'sum','laundry':'sum',
-                                               'pharmacy':'sum'}).reset_index(drop=True)
-bk=gpd.read_file(path+'nycbkclipped.shp')
+df=df.groupby(['blockid20'],as_index=False).agg({'atm':'sum','daycare':'sum','grocery':'sum','laundry':'sum',
+                                                 'pharmacy':'sum'}).reset_index(drop=True)
+
+
+
+bk=gpd.read_file(path+'nycbkclipped20.shp')
 bk.crs=4326
-df=pd.merge(bk,df,how='left',on='blockid')
-pop=pd.read_csv(path+'pop2020.csv',dtype={'GEOID':str,'POP2020':float})
-pop['blockid']=pop['GEOID'].copy()
-pop['pop2020']=pop['POP2020'].copy()
-pop=pop[['blockid','pop2020']].reset_index(drop=True)
-df=pd.merge(df,pop,how='left',on='blockid')
+df=pd.merge(bk,df,how='left',on='blockid20')
 df=df.fillna(0)
 df['amenities']=df['atm']+df['daycare']+df['grocery']+df['laundry']+df['pharmacy']
-df['amenpop']=np.where(df['pop2020']==0,df['amenities']/df['pop2020']
-
-df['tractid']=[str(x)[0:11] for x in df['blockid']]
-cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
-df=pd.merge(df,cttonta,how='inner',on='tractid')
-df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99'])].reset_index(drop=True)
-df=df.drop(['tractid','ntacode'],axis=1)
-
-df['ludi']=np.where((df['res']==0)&(df['ret']==0),0,df['ret']/df['res'])
-df.to_file(path+'bkwkcat2ludi.shp')
-dfinf=df[df['ludi']==np.inf].reset_index(drop=True)
-dfinf['pct']=99
+pop=pd.read_csv(path+'pop2020.csv',dtype={'blockid20':str,'pop20':float})
+df=pd.merge(df,pop,how='left',on='blockid20')
+df=df.fillna(0)
+df['ludi']=np.where((df['amenities']==0)|(df['pop20']==0),0,df['amenities']/df['pop20']*1000)
+df['tractid20']=[str(x)[0:11] for x in df['blockid20']]
+cttonta=pd.read_csv(path+'cttonta20.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid20')
+df=df[df['ntatype']=='0'].reset_index(drop=True)
+df=df.drop(['tractid20','ntacode20','ntaname','ntatype'],axis=1)
+df.to_file(path+'bkwkamenludi.shp')
 df0=df[df['ludi']==0].reset_index(drop=True)
 df0['pct']=0
-df=df[(df['ludi']!=0)&(df['ludi']!=np.inf)].reset_index(drop=True)
+df=df[df['ludi']!=0].reset_index(drop=True)
 df['pct']=pd.qcut(df['ludi'],100,labels=False)
-df=pd.concat([df0,df,dfinf],axis=0,ignore_index=True)
+df=pd.concat([df0,df],axis=0,ignore_index=True)
 df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
-df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
-          np.where(df['ludi']<0.1,'0.05~0.09',
-          np.where(df['ludi']<0.15,'0.10~0.14',
-          np.where(df['ludi']<0.2,'0.15~0.19',
-                   '>=0.20'))))
-df.loc[(df['ludi']>0)&(df['ludi']<=0.3),'ludi'].hist(bins=100)
+df['cat']=np.where(df['ludi']<10,'0~9',
+          np.where(df['ludi']<50,'10~49',
+          np.where(df['ludi']<100,'50~99',
+          np.where(df['ludi']<200,'100~199',
+                   '>=200'))))
+df['cat'].value_counts()
+df.loc[(df['ludi']>0)&(df['ludi']<=200),'ludi'].hist(bins=100)
+m=df.loc[(df['ludi']>0)&(df['ludi']<=200),'ludi'].mean()
+s=df.loc[(df['ludi']>0)&(df['ludi']<=200),'ludi'].std()
+df['score']=np.where(df['ludi']>=m+1.5*s,'Very High', 
+            np.where(df['ludi']>=m+0.5*s,'High',
+            np.where(df['ludi']>=m-0.5*s,'Medium',
+            np.where(df['ludi']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/bkwkamenludi.geojson',driver='GeoJSON')
+
+
+
+
+
+
+# Tract
+df=gpd.read_file(path+'bkwkamenludi.shp')
+df.crs=4326
+df['tractid20']=[str(x)[0:11] for x in df['blockid20']]
+df=df.groupby(['tractid20'],as_index=False).agg({'res':'sum','ret':'sum'}).reset_index(drop=True)
+df['ludi']=df['ret']/(df['res']+df['ret'])
+ct=gpd.read_file(path+'nycctclipped20.shp')
+ct.crs=4326
+df=pd.merge(ct,df,how='inner',on='tractid20')
+cttonta=pd.read_csv(path+'cttonta20.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid20')
+# df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','ludi','geometry']].reset_index(drop=True)
+# df=df.drop(['ntacode','ntaname'],axis=1)
+df=df[df['ntatype']=='0'].reset_index(drop=True)
+df=df.drop(['ntacode20','ntaname','ntatype'],axis=1)
+df.to_file(path+'ctcat2ludi.shp')
+df0=df[df['ludi']==0].reset_index(drop=True)
+df0['pct']=0
+df=df[df['ludi']!=0].reset_index(drop=True)
+df['pct']=pd.qcut(df['ludi'],100,labels=False)
+df=pd.concat([df0,df],axis=0,ignore_index=True)
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<0.02,'0.00~0.01',
+          np.where(df['ludi']<0.05,'0.02~0.04',
+          np.where(df['ludi']<0.07,'0.05~0.06',
+          np.where(df['ludi']<0.10,'0.07~0.09',
+                   '>=0.10'))))
+df['cat'].value_counts()
+df.loc[(df['ludi']>0)&(df['ludi']<=0.2),'ludi'].hist(bins=100)
 m=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].mean()
 s=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].std()
 df['score']=np.where(df['ludi']>=m+1.5*s,'Very High', 
@@ -794,6 +846,43 @@ df['score']=np.where(df['ludi']>=m+1.5*s,'Very High',
             np.where(df['ludi']>=m-1.5*s,'Low','Very Low'))))
 df['score'].hist()
 df['score'].value_counts()
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctcat2ludi.geojson',driver='GeoJSON')
 
-df.to_file(path+'bkwklu.shp')
+
+# NTA
+df=gpd.read_file(path+'bkwkcat2ludi.shp')
+df.crs=4326
+df['tractid20']=[str(x)[0:11] for x in df['blockid20']]
+cttonta=pd.read_csv(path+'cttonta20.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid20')
+df=df.groupby(['ntacode20'],as_index=False).agg({'res':'sum','ret':'sum'}).reset_index(drop=True)
+df['ludi']=df['ret']/(df['res']+df['ret'])
+nta=gpd.read_file(path+'ntaclipped20.shp')
+nta.crs=4326
+df=pd.merge(nta,df,how='inner',on='ntacode20')
+# df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','ludi','geometry']].reset_index(drop=True)
+df=df[df['ntatype']=='0'].reset_index(drop=True)
+df.to_file(path+'ntacat2ludi.shp')
+df0=df[df['ludi']==0].reset_index(drop=True)
+df0['pct']=0
+df=df[df['ludi']!=0].reset_index(drop=True)
+df['pct']=pd.qcut(df['ludi'],100,labels=False)
+df=pd.concat([df0,df],axis=0,ignore_index=True)
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<0.05,'0.00~0.04',
+          np.where(df['ludi']<0.1,'0.05~0.09',
+          np.where(df['ludi']<0.15,'0.10~0.14',
+          np.where(df['ludi']<0.2,'0.15~0.19',
+                   '>=0.20'))))
+df['cat'].value_counts()
+df.loc[(df['ludi']>0)&(df['ludi']<=0.2),'ludi'].hist(bins=100)
+m=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].mean()
+s=df.loc[(df['ludi']>0)&(df['ludi']<=0.15),'ludi'].std()
+df['score']=np.where(df['ludi']>=m+1.5*s,'Very High', 
+            np.where(df['ludi']>=m+0.5*s,'High',
+            np.where(df['ludi']>=m-0.5*s,'Medium',
+            np.where(df['ludi']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntacat2ludi.geojson',driver='GeoJSON')
 

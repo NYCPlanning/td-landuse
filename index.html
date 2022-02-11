@@ -144,6 +144,7 @@
             <option value='cat5adj'>Res*1+Off*1.5+Ret*10+Ind*0.5+Other*1</option>
             <option value='cat5adj2'>Res*1+Off*0.5+Ret*10+Ind*0.5+Other*1</option>
             <option value='cat2'>Ret/Res</option>
+            <option value='amen'>Amenities</option>
         </select>
         <br>
         <label>
@@ -978,6 +979,59 @@
 
 
 
+            // Add Census Block Amenities LUDI
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'bkwkamenludi', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'bkwkamenludi.geojson', // data source
+                'layerid': 'bkwkamenludi', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Census Block Amenities LUDI', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                // 'layercolname': 'cat', // category column name
+                // 'layercat': ['0.00~0.04', '0.05~0.09', '0.10~0.14', '0.15~0.19', '>=0.20'], // categories
+                'layercolname': 'score', // category column name
+                'layercat': ['Very Low', 'Low', 'Medium', 'High', 'Very High'], // categories
+                'layercolor': ['rgba(43,131,186,0.8)', 'rgba(171,221,164,0.8)', 'rgba(255,255,191,0.8)', 'rgba(253,174,97,0.8)', 'rgba(215,25,28,0.8)'], // extrusion color; use rgba
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+
+
 
 
 
@@ -1268,10 +1322,37 @@
             });
 
 
+            // Add Census Block Amenities LUDI popup
+            // Add click event
+            map.on('click', 'bkwkamenludi', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid20 + "</span><br>"; // description in the popup
+                description += "<b>Bank Owned ATM: </b><span>" + (Number(e.features[0].properties.atm)).toLocaleString() + "</span><br>";
+                description += "<b>Day Care​: </b><span>" + (Number(e.features[0].properties.daycare)).toLocaleString() + "</span><br>";
+                description += "<b>Grocery Store​: </b><span>" + (Number(e.features[0].properties.grocery)).toLocaleString() + "</span><br>";
+                description += "<b>Self-Service Laundry​: </b><span>" + (Number(e.features[0].properties.laundry)).toLocaleString() + "</span><br>";
+                description += "<b>Medicaid Enrolled Pharmacy​: </b><span>" + (Number(e.features[0].properties.pharmacy)).toLocaleString() + "</span><br>";
+                description += "<b>Total Amenities​: </b><span>" + (Number(e.features[0].properties.amenities)).toLocaleString() + "</span><br>";
+                description += "<b>Census 2020 Population​: </b><span>" + (Number(e.features[0].properties.pop20)).toLocaleString() + "</span><br>";
+                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.pct + "%</span><br>";
+                description += "<b>Category: </b><span>" + e.features[0].properties.score + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'bkwkamenludi', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'bkwkamenludi', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+
 
 
             // Add layer selector and legend
-            var layerOrder = ['bkwkcat3ludi', 'ctcat3ludi', 'ntacat3ludi', 'bkwkcat5ludi', 'ctcat5ludi', 'ntacat5ludi', 'bkwkcat5adjludi', 'ctcat5adjludi', 'ntacat5adjludi', 'bkwkcat5adj2ludi', 'ctcat5adj2ludi', 'ntacat5adj2ludi', 'bkwkcat2ludi', 'ctcat2ludi', 'ntacat2ludi']; // set layer order in the legend
+            var layerOrder = ['bkwkcat3ludi', 'ctcat3ludi', 'ntacat3ludi', 'bkwkcat5ludi', 'ctcat5ludi', 'ntacat5ludi', 'bkwkcat5adjludi', 'ctcat5adjludi', 'ntacat5adjludi', 'bkwkcat5adj2ludi', 'ctcat5adj2ludi', 'ntacat5adj2ludi', 'bkwkcat2ludi', 'ctcat2ludi', 'ntacat2ludi', 'bkwkamenludi']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
