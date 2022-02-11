@@ -996,7 +996,7 @@
             // Add click event
             map.on('click', 'bkwkcat3ludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid + "</span><br>"; // description in the popup
+                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid20 + "</span><br>"; // description in the popup
                 description += "<b>Residential%​: </b><span>" + (Number(e.features[0].properties.respct) * 100).toFixed(2) + "%</span><br>";
                 description += "<b>Office&Retail%​: </b><span>" + (Number(e.features[0].properties.offretpct) * 100).toFixed(2) + "%</span><br>";
                 description += "<b>Other%​: </b><span>" + (Number(e.features[0].properties.otherpct) * 100).toFixed(2) + "%</span><br>";
@@ -1015,7 +1015,7 @@
             // Add click event
             map.on('click', 'ctcat3ludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid20 + "</span><br>"; // description in the popup
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
@@ -1031,7 +1031,7 @@
             // Add click event
             map.on('click', 'ntacat3ludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode20 + "</span><br>"; // description in the popup
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
@@ -1049,7 +1049,7 @@
             // Add click event
             map.on('click', 'bkwkcat5ludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid + "</span><br>"; // description in the popup
+                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid20 + "</span><br>"; // description in the popup
                 description += "<b>Residential%​: </b><span>" + (Number(e.features[0].properties.respct) * 100).toFixed(2) + "%</span><br>";
                 description += "<b>Office%​: </b><span>" + (Number(e.features[0].properties.offpct) * 100).toFixed(2) + "%</span><br>";
                 description += "<b>Retail%​: </b><span>" + (Number(e.features[0].properties.retpct) * 100).toFixed(2) + "%</span><br>";
@@ -1070,7 +1070,7 @@
             // Add click event
             map.on('click', 'ctcat5ludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid20 + "</span><br>"; // description in the popup
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
@@ -1086,7 +1086,7 @@
             // Add click event
             map.on('click', 'ntacat5ludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode20 + "</span><br>"; // description in the popup
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
@@ -1104,7 +1104,7 @@
             // Add click event
             map.on('click', 'bkwkcat5adjludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid + "</span><br>"; // description in the popup
+                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid20 + "</span><br>"; // description in the popup
                 description += "<b>Residential%​: </b><span>" + (Number(e.features[0].properties.respct) * 100).toFixed(2) + "%</span><br>";
                 description += "<b>Office%​: </b><span>" + (Number(e.features[0].properties.offpct) * 100).toFixed(2) + "%</span><br>";
                 description += "<b>Retail%​: </b><span>" + (Number(e.features[0].properties.retpct) * 100).toFixed(2) + "%</span><br>";
@@ -1125,7 +1125,7 @@
             // Add click event
             map.on('click', 'ctcat5adjludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid20 + "</span><br>"; // description in the popup
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
@@ -1141,7 +1141,7 @@
             // Add click event
             map.on('click', 'ntacat5adjludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode20 + "</span><br>"; // description in the popup
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
@@ -1159,7 +1159,7 @@
             // Add click event
             map.on('click', 'bkwkcat5adj2ludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid + "</span><br>"; // description in the popup
+                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid20 + "</span><br>"; // description in the popup
                 description += "<b>Residential%​: </b><span>" + (Number(e.features[0].properties.respct) * 100).toFixed(2) + "%</span><br>";
                 description += "<b>Office%​: </b><span>" + (Number(e.features[0].properties.offpct) * 100).toFixed(2) + "%</span><br>";
                 description += "<b>Retail%​: </b><span>" + (Number(e.features[0].properties.retpct) * 100).toFixed(2) + "%</span><br>";
@@ -1180,7 +1180,7 @@
             // Add click event
             map.on('click', 'ctcat5adj2ludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid20 + "</span><br>"; // description in the popup
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
@@ -1196,7 +1196,7 @@
             // Add click event
             map.on('click', 'ntacat5adj2ludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode20 + "</span><br>"; // description in the popup
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
@@ -1210,67 +1210,11 @@
             });
 
 
-
-            // Add Census Block Cat5 Adjusted LUDI popup
-            // Add click event
-            map.on('click', 'bkwkcat5adjludi', function (e) {
-                var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid + "</span><br>"; // description in the popup
-                description += "<b>Residential%​: </b><span>" + (Number(e.features[0].properties.respct) * 100).toFixed(2) + "%</span><br>";
-                description += "<b>Office%​: </b><span>" + (Number(e.features[0].properties.offpct) * 100).toFixed(2) + "%</span><br>";
-                description += "<b>Retail%​: </b><span>" + (Number(e.features[0].properties.retpct) * 100).toFixed(2) + "%</span><br>";
-                description += "<b>Industrial%​: </b><span>" + (Number(e.features[0].properties.indpct) * 100).toFixed(2) + "%</span><br>";
-                description += "<b>Other%​: </b><span>" + (Number(e.features[0].properties.otherpct) * 100).toFixed(2) + "%</span><br>";
-                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
-                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-            });
-            // Add hover events
-            map.on('mouseenter', 'bkwkcat5adjludi', function () {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
-            });
-            map.on('mouseleave', 'bkwkcat5adjludi', function () {
-                map.getCanvas().style.cursor = '';
-            });
-
-            // Add Census Tract Cat5 Adjusted LUDI popup
-            // Add click event
-            map.on('click', 'ctcat5adjludi', function (e) {
-                var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
-                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
-                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-            });
-            // Add hover events
-            map.on('mouseenter', 'ctcat5adjludi', function () {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
-            });
-            map.on('mouseleave', 'ctcat5adjludi', function () {
-                map.getCanvas().style.cursor = '';
-            });
-
-            // Add NTA Cat5 Adjusted LUDI popup
-            // Add click event
-            map.on('click', 'ntacat5adjludi', function (e) {
-                var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
-                description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
-                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
-                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-            });
-            // Add hover events
-            map.on('mouseenter', 'ntacat5adjludi', function () {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
-            });
-            map.on('mouseleave', 'ntacat5adjludi', function () {
-                map.getCanvas().style.cursor = '';
-            });
-
-
             // Add Census Block Cat2 LUDI popup
             // Add click event
             map.on('click', 'bkwkcat2ludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid + "</span><br>"; // description in the popup
+                var description = "<b>Census Block: </b><span>" + e.features[0].properties.blockid20 + "</span><br>"; // description in the popup
                 description += "<b>Residential Sqft​: </b><span>" + (Number(e.features[0].properties.res)).toLocaleString() + "</span><br>";
                 description += "<b>Retail Sqft​: </b><span>" + (Number(e.features[0].properties.ret)).toLocaleString() + "</span><br>";
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
@@ -1290,7 +1234,7 @@
             // Add click event
             map.on('click', 'ctcat2ludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid20 + "</span><br>"; // description in the popup
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.pct + "%</span><br>";
                 description += "<b>Category: </b><span>" + e.features[0].properties.score + "</span><br>";
@@ -1308,7 +1252,7 @@
             // Add click event
             map.on('click', 'ntacat2ludi', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode20 + "</span><br>"; // description in the popup
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.pct + "%</span><br>";
