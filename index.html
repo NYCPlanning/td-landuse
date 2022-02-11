@@ -135,16 +135,24 @@
 
     <nav id="legend">
         <label>
-            Land Use Grouping
+            Index Type
         </label>
         <br>
         <select class='form-select' id='lucat'>
-            <option value='cat3'>Res+OffRet+Other</option>
-            <option value='cat5'>Res+Off+Ret+Ind+Other</option>
-            <option value='cat5adj'>Res*1+Off*1.5+Ret*10+Ind*0.5+Other*1</option>
-            <option value='cat5adj2'>Res*1+Off*0.5+Ret*10+Ind*0.5+Other*1</option>
-            <option value='cat2'>Ret/Res</option>
-            <option value='amen'>Amenities</option>
+            <optgroup label="Land Use Diversity">
+                <option value='cat3'>Res+OffRet+Other</option>
+                <option value='cat5'>Res+Off+Ret+Ind+Other</option>
+                <option value='cat5adj'>Res*1+Off*1.5+Ret*10+Ind*0.5+Other*1</option>
+                <option value='cat5adj2'>Res*1+Off*0.5+Ret*10+Ind*0.5+Other*1</option>
+                <option value='cat2'>Ret/Res</option>
+                <option value='amen'>Amenities</option>
+            </optgroup>
+            <optgroup label="Transit Travelshed">
+                <option value='mob'>Transit Mobility</option>
+                <option value='pop'>Access to Population</option>
+                <option value='job'>Access to Jobs</option>
+                <option value='labor'>Access to Labor Force</option>
+            </optgroup>
         </select>
         <br>
         <label>
@@ -1486,7 +1494,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['bkwkcat3ludi', 'ctcat3ludi', 'ntacat3ludi', 'bkwkcat5ludi', 'ctcat5ludi', 'ntacat5ludi', 'bkwkcat5adjludi', 'ctcat5adjludi', 'ntacat5adjludi', 'bkwkcat5adj2ludi', 'ctcat5adj2ludi', 'ntacat5adj2ludi', 'bkwkcat2ludi', 'ctcat2ludi', 'ntacat2ludi', 'bkwkamenludi','ctamenludi','ntaamenludi']; // set layer order in the legend
+            var layerOrder = ['bkwkcat3ludi', 'ctcat3ludi', 'ntacat3ludi', 'bkwkcat5ludi', 'ctcat5ludi', 'ntacat5ludi', 'bkwkcat5adjludi', 'ctcat5adjludi', 'ntacat5adjludi', 'bkwkcat5adj2ludi', 'ctcat5adj2ludi', 'ntacat5adj2ludi', 'bkwkcat2ludi', 'ctcat2ludi', 'ntacat2ludi', 'bkwkamenludi', 'ctamenludi', 'ntaamenludi']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
@@ -1554,20 +1562,65 @@
             // Create click event
             // Land use grouping
             lucat.addEventListener('change', function () {
-                var chosenLayer = document.getElementById('agglvl').value + document.getElementById('lucat').value + 'ludi';
-                map.setLayoutProperty(chosenLayer, 'visibility', 'visible'); // set layer visibility
-                document.getElementsByClassName(chosenLayer)[0].style.display = 'block';
-                var chosenLegendGroup = document.getElementsByClassName(chosenLayer + '-item');
-                for (var i = 0; i < chosenLegendGroup.length; i++) {
-                    chosenLegendGroup[i].style.display = 'block';
-                };
-                var unchosenLayer = layerOrder.filter(function (x) { return x !== chosenLayer; });
-                for (var i = 0; i < unchosenLayer.length; i++) {
-                    map.setLayoutProperty(unchosenLayer[i], 'visibility', 'none'); // set layer visibility
-                    document.getElementsByClassName(unchosenLayer[i])[0].style.display = 'none';
-                    var unchosenLegendGroup = document.getElementsByClassName(unchosenLayer[i] + '-item');
-                    for (var j = 0; j < unchosenLegendGroup.length; j++) {
-                        unchosenLegendGroup[j].style.display = 'none';
+                var chosenLucat = document.getElementById('lucat').value;
+                var chosenAgglvl = document.getElementById('agglvl').value;
+                var chosenLayer = chosenAgglvl + chosenLucat + 'ludi';
+                if (['mob', 'job', 'pop', 'labor'].indexOf(chosenLucat) < 0) {
+                    for (var i = 0; i < document.getElementById('agglvl').length; i++) {
+                        document.getElementById('agglvl').options[i].disabled = false;
+                    };
+                    map.setLayoutProperty(chosenLayer, 'visibility', 'visible'); // set layer visibility
+                    document.getElementsByClassName(chosenLayer)[0].style.display = 'block';
+                    var chosenLegendGroup = document.getElementsByClassName(chosenLayer + '-item');
+                    for (var i = 0; i < chosenLegendGroup.length; i++) {
+                        chosenLegendGroup[i].style.display = 'block';
+                    };
+                    var unchosenLayer = layerOrder.filter(function (x) { return x !== chosenLayer; });
+                    for (var i = 0; i < unchosenLayer.length; i++) {
+                        map.setLayoutProperty(unchosenLayer[i], 'visibility', 'none'); // set layer visibility
+                        document.getElementsByClassName(unchosenLayer[i])[0].style.display = 'none';
+                        var unchosenLegendGroup = document.getElementsByClassName(unchosenLayer[i] + '-item');
+                        for (var j = 0; j < unchosenLegendGroup.length; j++) {
+                            unchosenLegendGroup[j].style.display = 'none';
+                        };
+                    };
+                } else {
+                    document.getElementById('agglvl').options[0].disabled = true;
+                    if (chosenAgglvl === 'bkwk') {
+                        document.getElementById('agglvl').value = 'ct';
+                        chosenAgglvl = 'ct';
+                        chosenLayer = chosenAgglvl + chosenLucat + 'ludi';
+                        map.setLayoutProperty(chosenLayer, 'visibility', 'visible'); // set layer visibility
+                        document.getElementsByClassName(chosenLayer)[0].style.display = 'block';
+                        var chosenLegendGroup = document.getElementsByClassName(chosenLayer + '-item');
+                        for (var i = 0; i < chosenLegendGroup.length; i++) {
+                            chosenLegendGroup[i].style.display = 'block';
+                        };
+                        var unchosenLayer = layerOrder.filter(function (x) { return x !== chosenLayer; });
+                        for (var i = 0; i < unchosenLayer.length; i++) {
+                            map.setLayoutProperty(unchosenLayer[i], 'visibility', 'none'); // set layer visibility
+                            document.getElementsByClassName(unchosenLayer[i])[0].style.display = 'none';
+                            var unchosenLegendGroup = document.getElementsByClassName(unchosenLayer[i] + '-item');
+                            for (var j = 0; j < unchosenLegendGroup.length; j++) {
+                                unchosenLegendGroup[j].style.display = 'none';
+                            };
+                        };
+                    } else {
+                        map.setLayoutProperty(chosenLayer, 'visibility', 'visible'); // set layer visibility
+                        document.getElementsByClassName(chosenLayer)[0].style.display = 'block';
+                        var chosenLegendGroup = document.getElementsByClassName(chosenLayer + '-item');
+                        for (var i = 0; i < chosenLegendGroup.length; i++) {
+                            chosenLegendGroup[i].style.display = 'block';
+                        };
+                        var unchosenLayer = layerOrder.filter(function (x) { return x !== chosenLayer; });
+                        for (var i = 0; i < unchosenLayer.length; i++) {
+                            map.setLayoutProperty(unchosenLayer[i], 'visibility', 'none'); // set layer visibility
+                            document.getElementsByClassName(unchosenLayer[i])[0].style.display = 'none';
+                            var unchosenLegendGroup = document.getElementsByClassName(unchosenLayer[i] + '-item');
+                            for (var j = 0; j < unchosenLegendGroup.length; j++) {
+                                unchosenLegendGroup[j].style.display = 'none';
+                            };
+                        };
                     };
                 };
             });
