@@ -978,7 +978,6 @@
 
 
 
-
             // Add Census Block Amenities LUDI
             // Set layer contents
             var layerContent = {
@@ -1029,6 +1028,106 @@
             });
 
 
+
+            // Add Census Tract Amenities LUDI
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'ctamenludi', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'ctamenludi.geojson', // data source
+                'layerid': 'ctamenludi', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Census Tract Amenities LUDI', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                // 'layercolname': 'cat', // category column name
+                // 'layercat': ['0.00~0.04', '0.05~0.09', '0.10~0.14', '0.15~0.19', '>=0.20'], // categories
+                'layercolname': 'score', // category column name
+                'layercat': ['Very Low', 'Low', 'Medium', 'High', 'Very High'], // categories
+                'layercolor': ['rgba(43,131,186,0.8)', 'rgba(171,221,164,0.8)', 'rgba(255,255,191,0.8)', 'rgba(253,174,97,0.8)', 'rgba(215,25,28,0.8)'], // extrusion color; use rgba
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+            // Add NTA Amenities LUDI
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'ntaamenludi', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'ntaamenludi.geojson', // data source
+                'layerid': 'ntaamenludi', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'NTA Amenities LUDI', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                // 'layercolname': 'cat', // category column name
+                // 'layercat': ['0.00~0.04', '0.05~0.09', '0.10~0.14', '0.15~0.19', '>=0.20'], // categories
+                'layercolname': 'score', // category column name
+                'layercat': ['Very Low', 'Low', 'Medium', 'High', 'Very High'], // categories
+                'layercolor': ['rgba(43,131,186,0.8)', 'rgba(171,221,164,0.8)', 'rgba(255,255,191,0.8)', 'rgba(253,174,97,0.8)', 'rgba(215,25,28,0.8)'], // extrusion color; use rgba
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
 
 
 
@@ -1333,7 +1432,7 @@
                 description += "<b>Self-Service Laundry​: </b><span>" + (Number(e.features[0].properties.laundry)).toLocaleString() + "</span><br>";
                 description += "<b>Medicaid Enrolled Pharmacy​: </b><span>" + (Number(e.features[0].properties.pharmacy)).toLocaleString() + "</span><br>";
                 description += "<b>Total Amenities​: </b><span>" + (Number(e.features[0].properties.amenities)).toLocaleString() + "</span><br>";
-                description += "<b>Census 2020 Population​: </b><span>" + (Number(e.features[0].properties.pop20)).toLocaleString() + "</span><br>";
+                description += "<b>Population 2020​: </b><span>" + (Number(e.features[0].properties.pop20)).toLocaleString() + "</span><br>";
                 description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.pct + "%</span><br>";
                 description += "<b>Category: </b><span>" + e.features[0].properties.score + "</span><br>";
@@ -1347,12 +1446,47 @@
                 map.getCanvas().style.cursor = '';
             });
 
+            // Add Census Tract Amenities LUDI popup
+            // Add click event
+            map.on('click', 'ctamenludi', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid20 + "</span><br>"; // description in the popup
+                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.pct + "%</span><br>";
+                description += "<b>Category: </b><span>" + e.features[0].properties.score + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'ctamenludi', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'ctamenludi', function () {
+                map.getCanvas().style.cursor = '';
+            });
 
+            // Add NTA Amenities LUDI popup
+            // Add click event
+            map.on('click', 'ntaamenludi', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode20 + "</span><br>"; // description in the popup
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
+                description += "<b>LUDI​: </b><span>" + e.features[0].properties.ludi.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.pct + "%</span><br>";
+                description += "<b>Category: </b><span>" + e.features[0].properties.score + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'ntaamenludi', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'ntaamenludi', function () {
+                map.getCanvas().style.cursor = '';
+            });
 
 
 
             // Add layer selector and legend
-            var layerOrder = ['bkwkcat3ludi', 'ctcat3ludi', 'ntacat3ludi', 'bkwkcat5ludi', 'ctcat5ludi', 'ntacat5ludi', 'bkwkcat5adjludi', 'ctcat5adjludi', 'ntacat5adjludi', 'bkwkcat5adj2ludi', 'ctcat5adj2ludi', 'ntacat5adj2ludi', 'bkwkcat2ludi', 'ctcat2ludi', 'ntacat2ludi', 'bkwkamenludi']; // set layer order in the legend
+            var layerOrder = ['bkwkcat3ludi', 'ctcat3ludi', 'ntacat3ludi', 'bkwkcat5ludi', 'ctcat5ludi', 'ntacat5ludi', 'bkwkcat5adjludi', 'ctcat5adjludi', 'ntacat5adjludi', 'bkwkcat5adj2ludi', 'ctcat5adj2ludi', 'ntacat5adj2ludi', 'bkwkcat2ludi', 'ctcat2ludi', 'ntacat2ludi', 'bkwkamenludi','ctamenludi','ntaamenludi']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
