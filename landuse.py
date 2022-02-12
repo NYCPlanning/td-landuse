@@ -209,7 +209,6 @@ df=pd.merge(ct,df,how='inner',on='tractid20')
 cttonta=pd.read_csv(path+'cttonta20.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid20')
 # df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid20','ludi','geometry']].reset_index(drop=True)
-# df=df.drop(['ntacode','ntaname'],axis=1)
 df=df[df['ntatype']=='0'].reset_index(drop=True)
 df=df.drop(['ntacode20','ntaname','ntatype'],axis=1)
 df.to_file(path+'ctcat3ludi.shp')
@@ -305,7 +304,6 @@ df=pd.merge(ct,df,how='inner',on='tractid20')
 cttonta=pd.read_csv(path+'cttonta20.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid20')
 # df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','ludi','geometry']].reset_index(drop=True)
-# df=df.drop(['ntacode','ntaname'],axis=1)
 df=df[df['ntatype']=='0'].reset_index(drop=True)
 df=df.drop(['ntacode20','ntaname','ntatype'],axis=1)
 df.to_file(path+'ctcat5ludi.shp')
@@ -400,7 +398,6 @@ df=pd.merge(ct,df,how='inner',on='tractid20')
 cttonta=pd.read_csv(path+'cttonta20.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid20')
 # df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','ludi','geometry']].reset_index(drop=True)
-# df=df.drop(['ntacode','ntaname'],axis=1)
 df=df[df['ntatype']=='0'].reset_index(drop=True)
 df=df.drop(['ntacode20','ntaname','ntatype'],axis=1)
 df.to_file(path+'ctcat5adjludi.shp')
@@ -495,7 +492,6 @@ df=pd.merge(ct,df,how='inner',on='tractid20')
 cttonta=pd.read_csv(path+'cttonta20.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid20')
 # df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','ludi','geometry']].reset_index(drop=True)
-# df=df.drop(['ntacode','ntaname'],axis=1)
 df=df[df['ntatype']=='0'].reset_index(drop=True)
 df=df.drop(['ntacode20','ntaname','ntatype'],axis=1)
 df.to_file(path+'ctcat5adj2ludi.shp')
@@ -587,7 +583,6 @@ df=pd.merge(ct,df,how='inner',on='tractid20')
 cttonta=pd.read_csv(path+'cttonta20.csv',dtype=str)
 df=pd.merge(df,cttonta,how='inner',on='tractid20')
 # df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','ludi','geometry']].reset_index(drop=True)
-# df=df.drop(['ntacode','ntaname'],axis=1)
 df=df[df['ntatype']=='0'].reset_index(drop=True)
 df=df.drop(['ntacode20','ntaname','ntatype'],axis=1)
 df.to_file(path+'ctcat2ludi.shp')
@@ -877,4 +872,215 @@ df['score']=np.where(df['ludi']>=m+1.5*s,'Very High',
 df['score'].hist()
 df['score'].value_counts()
 df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntaamenludi.geojson',driver='GeoJSON')
+
+
+
+
+
+
+# Transit Travelshed
+# Transit Mobility
+# Tract
+df=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/mapbox/tti.geojson')
+df.crs=4326
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','mobindex','geometry']].reset_index(drop=True)
+df.to_file(path+'ctmobludi.shp')
+df['pct']=pd.qcut(df['mobindex'],100,labels=False)
+df['mobindex'].describe(percentiles=np.arange(0.2,1,0.2))
+df.loc[(df['mobindex']>0)&(df['mobindex']<=100000),'mobindex'].hist(bins=100)
+m=df.loc[(df['mobindex']>0)&(df['mobindex']<=80000),'mobindex'].mean()
+s=df.loc[(df['mobindex']>0)&(df['mobindex']<=80000),'mobindex'].std()
+df['score']=np.where(df['mobindex']>=m+1.5*s,'Very High', 
+            np.where(df['mobindex']>=m+0.5*s,'High',
+            np.where(df['mobindex']>=m-0.5*s,'Medium',
+            np.where(df['mobindex']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctmobludi.geojson',driver='GeoJSON')
+
+# NTA
+df=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/mapbox/tti.geojson')
+df.crs=4326
+pop=pd.read_csv(path+'pop1519.csv',dtype={'tractid':str,'pop1519':float})
+df=pd.merge(df,pop,how='left',on='tractid')
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df['mobpop']=df['mobindex']*df['pop1519']
+df=df.groupby(['ntacode'],as_index=False).agg({'mobpop':'sum','pop1519':'sum'}).reset_index(drop=True)
+df['mobindex']=df['mobpop']/df['pop1519']
+nta=gpd.read_file(path+'ntaclipped.shp')
+nta.crs=4326
+df=pd.merge(nta,df,how='inner',on='ntacode')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','mobindex','geometry']].reset_index(drop=True)
+df.to_file(path+'ntamobludi.shp')
+df['pct']=pd.qcut(df['mobindex'],100,labels=False)
+df['mobindex'].describe(percentiles=np.arange(0.2,1,0.2))
+df.loc[(df['mobindex']>0)&(df['mobindex']<=100000),'mobindex'].hist(bins=100)
+m=df.loc[(df['mobindex']>0)&(df['mobindex']<=80000),'mobindex'].mean()
+s=df.loc[(df['mobindex']>0)&(df['mobindex']<=80000),'mobindex'].std()
+df['score']=np.where(df['mobindex']>=m+1.5*s,'Very High', 
+            np.where(df['mobindex']>=m+0.5*s,'High',
+            np.where(df['mobindex']>=m-0.5*s,'Medium',
+            np.where(df['mobindex']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntamobludi.geojson',driver='GeoJSON')
+
+
+
+# Access to Population
+# Tract
+df=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/mapbox/tti.geojson')
+df.crs=4326
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','popindex','geometry']].reset_index(drop=True)
+df.to_file(path+'ctpopludi.shp')
+df['pct']=pd.qcut(df['popindex'],100,labels=False)
+df['popindex'].describe(percentiles=np.arange(0.2,1,0.2))
+df.loc[(df['popindex']>0)&(df['popindex']<=8000),'popindex'].hist(bins=100)
+m=df.loc[(df['popindex']>0)&(df['popindex']<=6000),'popindex'].mean()
+s=df.loc[(df['popindex']>0)&(df['popindex']<=6000),'popindex'].std()
+df['score']=np.where(df['popindex']>=m+1.5*s,'Very High', 
+            np.where(df['popindex']>=m+0.5*s,'High',
+            np.where(df['popindex']>=m-0.5*s,'Medium',
+            np.where(df['popindex']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctpopludi.geojson',driver='GeoJSON')
+
+# NTA
+df=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/mapbox/tti.geojson')
+df.crs=4326
+pop=pd.read_csv(path+'pop1519.csv',dtype={'tractid':str,'pop1519':float})
+df=pd.merge(df,pop,how='left',on='tractid')
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df['poppop']=df['popindex']*df['pop1519']
+df=df.groupby(['ntacode'],as_index=False).agg({'poppop':'sum','pop1519':'sum'}).reset_index(drop=True)
+df['popindex']=df['poppop']/df['pop1519']
+nta=gpd.read_file(path+'ntaclipped.shp')
+nta.crs=4326
+df=pd.merge(nta,df,how='inner',on='ntacode')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','popindex','geometry']].reset_index(drop=True)
+df.to_file(path+'ntapopludi.shp')
+df['pct']=pd.qcut(df['popindex'],100,labels=False)
+df['popindex'].describe(percentiles=np.arange(0.2,1,0.2))
+df.loc[(df['popindex']>0)&(df['popindex']<=8000),'popindex'].hist(bins=100)
+m=df.loc[(df['popindex']>0)&(df['popindex']<=6000),'popindex'].mean()
+s=df.loc[(df['popindex']>0)&(df['popindex']<=6000),'popindex'].std()
+df['score']=np.where(df['popindex']>=m+1.5*s,'Very High', 
+            np.where(df['popindex']>=m+0.5*s,'High',
+            np.where(df['popindex']>=m-0.5*s,'Medium',
+            np.where(df['popindex']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntapopludi.geojson',driver='GeoJSON')
+
+
+
+# Access to Jobs
+# Tract
+df=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/mapbox/tti.geojson')
+df.crs=4326
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','jobindex','geometry']].reset_index(drop=True)
+df.to_file(path+'ctjobludi.shp')
+df['pct']=pd.qcut(df['jobindex'],100,labels=False)
+df['jobindex'].describe(percentiles=np.arange(0.2,1,0.2))
+df.loc[(df['jobindex']>0)&(df['jobindex']<=3000),'jobindex'].hist(bins=100)
+m=df.loc[(df['jobindex']>0)&(df['jobindex']<=2000),'jobindex'].mean()
+s=df.loc[(df['jobindex']>0)&(df['jobindex']<=2000),'jobindex'].std()
+df['score']=np.where(df['jobindex']>=m+1.5*s,'Very High', 
+            np.where(df['jobindex']>=m+0.5*s,'High',
+            np.where(df['jobindex']>=m-0.5*s,'Medium',
+            np.where(df['jobindex']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctjobludi.geojson',driver='GeoJSON')
+
+# NTA
+df=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/mapbox/tti.geojson')
+df.crs=4326
+pop=pd.read_csv(path+'pop1519.csv',dtype={'tractid':str,'pop1519':float})
+df=pd.merge(df,pop,how='left',on='tractid')
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df['jobpop']=df['jobindex']*df['pop1519']
+df=df.groupby(['ntacode'],as_index=False).agg({'jobpop':'sum','pop1519':'sum'}).reset_index(drop=True)
+df['jobindex']=df['jobpop']/df['pop1519']
+nta=gpd.read_file(path+'ntaclipped.shp')
+nta.crs=4326
+df=pd.merge(nta,df,how='inner',on='ntacode')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','jobindex','geometry']].reset_index(drop=True)
+df.to_file(path+'ntapopludi.shp')
+df['pct']=pd.qcut(df['jobindex'],100,labels=False)
+df['jobindex'].describe(percentiles=np.arange(0.2,1,0.2))
+df.loc[(df['jobindex']>0)&(df['jobindex']<=3000),'jobindex'].hist(bins=100)
+m=df.loc[(df['jobindex']>0)&(df['jobindex']<=2000),'jobindex'].mean()
+s=df.loc[(df['jobindex']>0)&(df['jobindex']<=2000),'jobindex'].std()
+df['score']=np.where(df['jobindex']>=m+1.5*s,'Very High', 
+            np.where(df['jobindex']>=m+0.5*s,'High',
+            np.where(df['jobindex']>=m-0.5*s,'Medium',
+            np.where(df['jobindex']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntajobludi.geojson',driver='GeoJSON')
+
+
+
+# Access to Labor Force
+# Tract
+df=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/mapbox/tti.geojson')
+df.crs=4326
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['tractid','labindex','geometry']].reset_index(drop=True)
+df.to_file(path+'ctlabludi.shp')
+df['pct']=pd.qcut(df['labindex'],100,labels=False)
+df['labindex'].describe(percentiles=np.arange(0.2,1,0.2))
+df.loc[(df['labindex']>0)&(df['labindex']<=3000),'labindex'].hist(bins=100)
+m=df.loc[(df['labindex']>0)&(df['labindex']<=2000),'labindex'].mean()
+s=df.loc[(df['labindex']>0)&(df['labindex']<=2000),'labindex'].std()
+df['score']=np.where(df['labindex']>=m+1.5*s,'Very High', 
+            np.where(df['labindex']>=m+0.5*s,'High',
+            np.where(df['labindex']>=m-0.5*s,'Medium',
+            np.where(df['labindex']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ctlabludi.geojson',driver='GeoJSON')
+
+# NTA
+df=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/mapbox/tti.geojson')
+df.crs=4326
+pop=pd.read_csv(path+'pop1519.csv',dtype={'tractid':str,'pop1519':float})
+df=pd.merge(df,pop,how='left',on='tractid')
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df['labpop']=df['labindex']*df['pop1519']
+df=df.groupby(['ntacode'],as_index=False).agg({'labpop':'sum','pop1519':'sum'}).reset_index(drop=True)
+df['labindex']=df['labpop']/df['pop1519']
+nta=gpd.read_file(path+'ntaclipped.shp')
+nta.crs=4326
+df=pd.merge(nta,df,how='inner',on='ntacode')
+df=df.loc[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99']),['ntacode','ntaname','labindex','geometry']].reset_index(drop=True)
+df.to_file(path+'ntapopludi.shp')
+df['pct']=pd.qcut(df['labindex'],100,labels=False)
+df['labindex'].describe(percentiles=np.arange(0.2,1,0.2))
+df.loc[(df['labindex']>0)&(df['labindex']<=3000),'labindex'].hist(bins=100)
+m=df.loc[(df['labindex']>0)&(df['labindex']<=2000),'labindex'].mean()
+s=df.loc[(df['labindex']>0)&(df['labindex']<=2000),'labindex'].std()
+df['score']=np.where(df['labindex']>=m+1.5*s,'Very High', 
+            np.where(df['labindex']>=m+0.5*s,'High',
+            np.where(df['labindex']>=m-0.5*s,'Medium',
+            np.where(df['labindex']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
+df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntalabludi.geojson',driver='GeoJSON')
+
+
+
 
