@@ -1084,3 +1084,43 @@ df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-landuse/ntalabludi.geojson',dri
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Access to Amenities with 2010 CT
+# Tract
+nycbkpt20=gpd.read_file(path+'nycbkpt20.shp')
+nycbkpt20.crs=4326
+quadstatect=gpd.read_file('C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/shp/quadstatect.shp')
+quadstatect.crs=4326
+nycbkpt20=gpd.sjoin(nycbkpt20,quadstatect,how='inner',op='intersects')
+nycbkpt20=nycbkpt20[['blockid20','tractid']].reset_index(drop=True)
+df=gpd.read_file(path+'bkwkamenludi.shp')
+df.crs=4326
+df=pd.merge(df,nycbkpt20,how='inner',on='blockid20')
+df=df.groupby(['tractid'],as_index=False).agg({'amenities':'sum','pop20':'sum'}).reset_index(drop=True)
+df['ludi']=np.where((df['amenities']==0)|(df['pop20']==0),0,df['amenities']/df['pop20']*1000)
+ct=gpd.read_file(path+'nycctclipped.shp')
+ct.crs=4326
+df=pd.merge(ct,df,how='inner',on='tractid')
+cttonta=pd.read_csv(path+'cttonta.csv',dtype=str)
+df=pd.merge(df,cttonta,how='inner',on='tractid')
+df=df[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99'])].reset_index(drop=True)
+df=df.drop(['ntacode'],axis=1)
+df.to_file(path+'ctamenludi10.shp')
