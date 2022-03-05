@@ -1124,3 +1124,26 @@ df=pd.merge(df,cttonta,how='inner',on='tractid')
 df=df[~np.isin(df['ntacode'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99'])].reset_index(drop=True)
 df=df.drop(['ntacode'],axis=1)
 df.to_file(path+'ctamenludi10.shp')
+df0=df[df['ludi']==0].reset_index(drop=True)
+df0['pct']=0
+df=df[df['ludi']!=0].reset_index(drop=True)
+df['pct']=pd.qcut(df['ludi'],100,labels=False)
+df=pd.concat([df0,df],axis=0,ignore_index=True)
+df['ludi'].describe(percentiles=np.arange(0.2,1,0.2))
+df['cat']=np.where(df['ludi']<=0.5,'0.0~0.5',
+          np.where(df['ludi']<=1,'0.6~1.0',
+          np.where(df['ludi']<=1.5,'1.1~1.5',
+          np.where(df['ludi']<=2,'1.6~2.0',
+                   '>2.0'))))
+df['cat'].value_counts()
+df.loc[(df['ludi']>0)&(df['ludi']<=3),'ludi'].hist(bins=100)
+m=df.loc[(df['ludi']>0)&(df['ludi']<=2),'ludi'].mean()
+s=df.loc[(df['ludi']>0)&(df['ludi']<=2),'ludi'].std()
+df['score']=np.where(df['ludi']>=m+1.5*s,'Very High', 
+            np.where(df['ludi']>=m+0.5*s,'High',
+            np.where(df['ludi']>=m-0.5*s,'Medium',
+            np.where(df['ludi']>=m-1.5*s,'Low','Very Low'))))
+df['score'].hist()
+df['score'].value_counts()
+df.to_file('C:/Users/mayij/Desktop/ctamenludi10.shp')
+
