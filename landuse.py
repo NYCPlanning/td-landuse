@@ -723,6 +723,7 @@ df.to_file(path+'ctlucluster.shp')
 atm=gpd.read_file(path+'amenities/BankOwnedATMLocations_191106/BankOwnedATMLocations_191106.shp')
 atm.crs=6318
 atm=atm.to_crs(4326)
+atm=atm[atm['lat']!=0].reset_index(drop=True)
 atm['atm']=1
 atm=atm[['atm','geometry']].reset_index(drop=True)
 # Day Care
