@@ -1,0 +1,28 @@
+name: Rotate Mapbox Token
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-token:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Encode and inject Mapbox token
+        env:
+          MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
+        run: |
+          cp config.template.json config.json
+          ENCODED_TOKEN=$(echo -n "$MAPBOX_TOKEN" | base64 | tr -d '\n')
+          jq --arg token "$ENCODED_TOKEN" 'walk(if type == "string" then gsub("\\$\\{MAPBOX_TOKEN\\}"; $token) else . end)' \
+            config.json > config.tmp.json
+          mv config.tmp.json config.json
+
+      - name: Commit and push changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'config.json'
+          message: 'Rotate Mapbox token'
